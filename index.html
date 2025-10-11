@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation</title>
+    <title>3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation</title>
 
     <!-- Favicon references -->
     <link rel="icon" type="image/png" href="./images/logo.png">
@@ -10,19 +10,19 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 
     <meta
-        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        content="3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation"
         name="description" />
     <meta
-        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        content="3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation"
         property="og:title" />
     <meta
-        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        content="3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation"
         property="og:description" />
     <meta
-        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        content="3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation"
         property="twitter:title" />
     <meta
-        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        content="3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation"
         property="twitter:description" />
     <meta property="og:type" content="website" />
     <meta content="summary_large_image" name="twitter:card" />
@@ -36,23 +36,41 @@
         rel="stylesheet">
     <link href="style.css?" rel="stylesheet" type="text/css" />
 
-    <!-- 🔎 Added minimal CSS for click‑to‑zoom lightbox -->
+    <!-- 🔎 Added minimal CSS for click-to-zoom lightbox -->
     <style>
-      /* make images clearly zoomable */
       img.zoomable { cursor: zoom-in; transition: transform .2s ease; }
-
-      /* fullscreen overlay */
       .lightbox-overlay {
         position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
         background: rgba(0,0,0,.9); z-index: 10000;
       }
       .lightbox-overlay.active { display: flex; }
       .lightbox-overlay img { max-width: 95vw; max-height: 95vh; box-shadow: 0 10px 40px rgba(0,0,0,.6); border-radius: 8px; }
-      /* show zoom-out cursor while overlay is open */
       .lightbox-overlay, .lightbox-overlay * { cursor: zoom-out; }
-
-      /* prevent background scroll when overlay is open */
       body.no-scroll { overflow: hidden; }
+
+      /* 🧭 Title alignment fix */
+      .title-row {
+        position: relative;
+        width: 100%;
+        text-align: center;
+        margin-top: 20px;
+      }
+      .title-center {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .title-video {
+        width: 120px;
+        height: auto;
+        border-radius: 20px;
+      }
+      .title-text-block {
+        text-align: center;
+      }
     </style>
 
     <!-- MathJax for LaTeX rendering -->
@@ -76,11 +94,9 @@
         <div class="container">
             <nav class="main-nav">
                 <ul class="nav-links">
+                    <li><a href="#teaser">Teaser</a></li>
                     <li><a href="#overview">Overview</a></li>
-                    <li><a href="#dataset">Dataset</a></li>
                     <li><a href="#analysis">Analysis</a></li>
-                    <li><a href="#framework">Framework</a></li>
-                    <li><a href="#evaluation">Evaluation</a></li>
                     <li><a href="#results">Results</a></li>
                     <li><a href="#citation">Citation</a></li>
                 </ul>
@@ -90,21 +106,34 @@
 
     <div class="hero-section">
         <div class="container">
-            <div class="title-row">
-                <div class="title-flex">
-                    <video class="title-video" autoplay muted loop playsinline>
-                        <source src="images/logo_moving.mp4" type="video/mp4">
-                    </video>
-                   
-                    <div class="title-text-block">
-                    <h1 class="title">
-                        <span class="gradient-text">3D Scene Prompt</span> for Scene-Consistent Camera-Controllable Video Generation
+            <div class="title-row" 
+                style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+            <div class="title-flex" 
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; text-align: center; margin: 0 auto;">
+
+                <!-- 🎥 로고 -->
+                <video class="title-video" 
+                    autoplay 
+                    muted 
+                    loop 
+                    playsinline 
+                    style="width: 130px; height: auto; border-radius: 20px; transform: scaleX(1);">
+                    <source src="images/logo_moving.mp4" type="video/mp4">
+                </video>
+
+                <!-- 🧠 타이틀 텍스트 -->
+                <div class="title-text-block" style="text-align: center; max-width: 700px;">
+                    <h1 class="title" style="font-size: 1.8em; font-weight: 700; margin: 0;">
+                    3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation
                     </h1>
-                    <h1 class="subtitle">arXiv 2025</h1>
-                </div>
+                    <h1 class="subtitle" style="font-size: 1.1em; color: #333; margin-top: 5px;">
+                    arXiv 2025
+                    </h1>
                 </div>
             </div>
-            <!-- Author Information -->
+            </div>
+
+            <!-- 이하 기존 내용 유지 -->
             <div class="base-row author-row">
                 <div class="base-col author-col">
                     <a href="https://scholar.google.com/citations?user=0H3dcPoAAAAJ&hl=en" target="_blank" class="author-text">
@@ -123,12 +152,12 @@
                 </div>
                 <div class="base-col author-col">
                     <a href="https://scholar.google.com/citations?user=D3h3NxwAAAAJ&hl=en" target="_blank" class="author-text">
-                        <strong>Takuya Narihira</strong><sup>2</sup>
+                        Takuya Narihira<sup>2</sup>
                     </a>
                 </div>
                 <div class="base-col author-col">
                     <a href="https://ai.sony/people/Kazumi-Fukuda/" target="_blank" class="author-text">
-                        <strong>Kazumi Fukuda</strong><sup>2</sup>
+                        Kazumi Fukuda<sup>2</sup>
                     </a>
                 </div>
             </div>
@@ -136,27 +165,26 @@
             <div class="base-row author-row">
                 <div class="base-col author-col">
                     <a href="https://j0seo.github.io" target="_blank" class="author-text">
-                        <strong>Junyoung Seo</strong><sup>1</sup>
+                        Junyoung Seo<sup>1</sup>
                     </a>
                 </div>
                 <div class="base-col author-col">
                     <a href="https://sunghwanhong.github.io" target="_blank" class="author-text">
-                        <strong>Sunghwan Hong</strong><sup>3</sup>
+                        Sunghwan Hong<sup>3</sup>
                     </a>
                 </div>
                 <div class="base-col author-col">
                     <a href="https://www.yukimitsufuji.com" target="_blank" class="author-text">
-                        <strong>Yuki Mitsufuji</strong><sup>2,4</sup><span class="corresponding-author">†</span>
+                        Yuki Mitsufuji<sup>2,4</sup><span class="corresponding-author">†</span>
                     </a>
                 </div>
                 <div class="base-col author-col">
                     <a href="https://cvlab.kaist.ac.kr/members/faculty" target="_blank" class="author-text">
-                        <strong>Seungryong Kim</strong><sup>1</sup><span class="corresponding-author">†</span>
+                        Seungryong Kim<sup>1</sup><span class="corresponding-author">†</span>
                     </a>
                 </div>
             </div>
 
-            <!-- Author Affiliations -->
             <div class="base-row author-row">
                 <div class="base-col author-col affiliations">
                     <sup>1</sup>KAIST AI &nbsp;&nbsp;
@@ -168,24 +196,40 @@
                     <span class="corresponding-author-note">†</span> Co-corresponding authors
                 </div>
             </div>
-            <!-- Links -->
+
             <div class="link-labels base-row"> 
-                <div class="base-col icon-col"><a href="https://arxiv.org/pdf/2510.07310" target="_blank"
-                        class="link-block">
+                <div class="base-col icon-col">
+                    <a href="https://arxiv.org/abs/2510.07310" target="_blank" class="link-block">
+                        <i class="fa fa-university main-icon" style="font-size: 60px"></i>
+                        <strong class="link-labels-text">arXiv</strong>
+                    </a>
+                </div>
+
+                <div class="base-col icon-col">
+                    <a href="https://arxiv.org/pdf/2510.07310" target="_blank" class="link-block">
                         <i class="fa fas fa-file-text main-icon" style="font-size: 60px"></i>
                         <strong class="link-labels-text">Paper</strong>
-                    </a></div>
-                <div class="base-col icon-col"><a href='https://github.com/cvlab-kaist/MATRIX' class="link-block">
+                    </a>
+                </div>
+
+                <div class="base-col icon-col">
+                    <a href="https://github.com/cvlab-kaist/3DScenePrompt" target="_blank" class="link-block">
                         <i class="fa fa-github main-icon" style="font-size: 60px"></i>
                         <strong class="link-labels-text">Code</strong>
-                    </a></div>
-                <div class="base-col icon-col"><a href="#citation" class="link-block">
+                    </a>
+                </div>
+
+                <div class="base-col icon-col">
+                    <a href="#citation" class="link-block">
                         <i class="fa fa-graduation-cap main-icon" style="font-size: 60px"></i>
                         <strong class="link-labels-text">Citation</strong>
-                    </a></div>
-            </div>
+                    </a>
+                </div>
+            </div>    
         </div>
     </div>
+</body>
+</html>
 
     <main class="main-content">
         <div class="container">
@@ -193,306 +237,337 @@
             <!-- Contents: TL;DR -->
             
             <section id="teaser" class="section">
-                <div class="tldr">
-                    <b>TL;DR</b>: MATRIX identifies interaction-dominant layers in video DiTs and introduces a simple yet effective regularization that aligns their attention to multi-instance mask tracks, resulting in more interaction-aware video generation.
-                </div>
-                <h2>Teaser</h2>
-                <div class="video-container">
-                    <video class="results_video" autoplay muted loop playsinline>
-                        <source src="videos/teaser_000.mp4" type="video/mp4">
-                    </video>
-                    <p class="image-caption"> <strong>Text Prompt:</strong> At a kitchen counter, a student in a white shirt places a notebook on a wooden table. Cups and plates are scattered nearby, and sunlight comes in through the window. The action demonstrates placing the notebook on the flat surface.</p>
-                
-                    <video class="results_video" autoplay muted loop playsinline>
-                        <source src="videos/teaser_001.mp4" type="video/mp4">
-                    </video>
-                    <p class="image-caption"> <strong>Text Prompt:</strong> A man in a white t-shirt lifts a large box from the ground near a delivery truck on a narrow street.</p>
-                
-                    <video class="results_video" autoplay muted loop playsinline>
-                        <source src="videos/teaser_010.mp4" type="video/mp4">
-                    </video>
-                    <p class="image-caption"> <strong>Text Prompt:</strong> The man in a blue shirt feeds a strawberry to the woman in a white chef coat.</p>
-                
-                </div>
-                
-                <!-- <div class="slideshow-container">
-                    <div class="slideshow" data-range="000-011" data-dir="videos" data-ext="mp4"></div>
+                <div class="container">
+                    <div class="tldr">
+                    <b>TL;DR</b>: <strong>3DScenePrompt</strong> is a framework for 
+                    <strong>camera-controllable video generation</strong> that preserves 
+                    <strong>scene consistency</strong> when extending videos along 
+                    <strong>user-defined trajectories</strong>.
+                    </div>
+
+                    <h2>Teaser</h2>
+
+                    <!-- 🎥 Teaser 영상 섹션 (Results와 동일한 구조) -->
+                    <div class="slideshow-container">
+                    <div class="slideshow" data-range="001-009" data-dir="videos" data-ext="mp4"></div>
                     <button class="slideshow-nav prev" aria-label="Previous slide" title="Previous">&#10094;</button>
                     <button class="slideshow-nav next" aria-label="Next slide" title="Next">&#10095;</button>
-                    <button class="play-pause" aria-label="Pause autoplay" title="Pause autoplay">
-                        <i class="fa fa-pause"></i>
-                      </button>
-                </div> -->
-                
+                    <div class="slideshow-dots"></div>
+                    </div>
+                </div>
             </section>
-            <!-- Contents: Overview -->
-            <div id="overview" class="base-row section">
-                <h2>Overview</h2>
-                <p class="paragraph">
-                    <!---
-                    Recent video diffusion models can generate high-quality videos but often fail to correctly represent multi-object interactions — e.g., losing track of who does what to whom or drifting identities over time. MATRIX tackles this by first analyzing how DiTs internally bind text and video tokens, revealing that semantic grounding and temporal propagation of interactions emerge only in a few critical attention layers. 
-                    It then fine-tunes just those layers using SGA + SPA losses aligned with multi-instance mask tracks, enabling efficient improvement without retraining the whole model. To support both analysis and fair benchmarking, the authors release MATRIX-11K, a large dataset of interaction-rich videos, and InterGenEval, a new protocol to measure interaction fidelity beyond standard quality metrics.
-                    -->
-                    We conduct a systematic analysis that formalizes interaction as two perspectives of video DiTs: <strong>semantic grounding</strong> and <strong>semantic propagation</strong>.
-                    We find both effects concentrate in a small subset of interaction-dominant layers. 
-                    Motivated by this, we introduce <strong>MATRIX</strong>, a simple and effective regularization that aligns attention in specific layers of video DiTs with multi-instance mask tracks, enhancing interaction fidelity and semantic alignment while reducing drift and hallucination. 
-                </p>
-            </div>
+
+
+
+            <section id="overview" class="section">
+            <h2>Overview</h2>
             <div class="image-container">
                 <div class="image-content">
-                    <img src="images/teaser.png" class="img large-image" alt="MATRIX teaser">
+                <img src="images/fig_framework.png" class="img large-image" alt="Framework overview">
                 </div>
-            </div>
-            <div>
-                <p>
-                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
-                    <strong>MATRIX-11K</strong> Dataset — 11K videos with interaction-aware captions and instance-level mask tracks.
-                </p>
-                <p>
-                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
-                    <strong>First systematic analysis</strong> of how Video DiTs encode semantic grounding and semantic propagation, analyzed via 3D full attentions, identifying interaction-dominant layers.
-                </p>
-                <p>
-                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
-                    <strong>MATRIX</strong> Framework — a simple yet effective regularization that aligns attention in interaction-dominant layers with multi-instance mask tracks via two terms, including Semantic Grounding Alignment (SGA) and Semantic Propagation Alignment (SPA) losses. 
-                </p>
-                <p>
-                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
-                    <strong>InterGenEval</strong> Protocol — an interaction-aware evaluation protocol that measures Key Interaction Semantic Alignment (KISA), Semantic Grounding Integrity (SGI), along with Semantic Propagation Integrity (SPI), and Interaction Fidelity (IF).
-                </p>
-                <p>
-                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
-                    <strong>State-of-the-art</strong> performance — significant interaction fidelity gains over baselines while maintaining video quality.
+                <p class="image-caption">
+                <strong>Overview of our proposed framework.</strong>
+                Given a static 3D point cloud reconstructed from an input video and an action prompt, our model generates a dynamic video aligned with a user-specified camera trajectory. 
+                The framework jointly leverages 
+                <span style="color:#0070C0;"><strong>temporal</strong></span> conditioning from the last few frames to ensure motion continuity, and 
+                <span style="color:#06B050;"><strong>spatial</strong></span> conditioning from rendered views of the static point cloud to preserve scene geometry.
                 </p>
             </div>
-            <!-- Contents: Dataset -->
-            <section id="dataset" class="section">
-                <h2>Dataset</h2>
-                <h3>Our Dataset Curation Pipeline</h3>
-                <div class="image-container">
-                    <div class="image-content">
-                        <img src="images/fig_data_pipeline.png" class="img large-image" alt="MATRIX-11K illustration" data-fullsrc="images/fig_data_pipeline.png">
-                    </div>
-                    <p class="image-caption">  <strong>Top</strong> : An LLM (a) identifies interaction triplets, (b) filters them using Dynamism and Contactness, and (c) extracts per-ID appearance descriptions. 
-                    <strong>Bottom</strong> : A VLM then verifies candidate to select an anchor frame, from which SAM2 propagates masks to produce instance mask tracks.  </p>
-                </div>
-                <h3>Curated Dataset Examples</h3>
-                <div class="slideshow-container">
-                    <div class="slideshow">
-                        <figure class="slide">
-                            <img src="images/dataset_example.png"
-                                alt=""
-                                data-fullsrc="images/dataset_example.png">
-                    
-                            <figcaption>
-                                <strong>Dataset Example.</strong> Given a video and a caption, we extract interaction information including subject, verb, object, its appearance description and interaction-related scores. Using the information, we extract instance mask tracks using SAM2 and VLM.
-                            </figcaption>
-                        </figure>
-                        <figure class="slide">
-                            <img src="images/dataset_example2.png"
-                                    alt=""
-                                    data-fullsrc="images/dataset_example2.png">
-                    
-                            <figcaption>
-                                <strong>Dataset Example.</strong> Given a video and a caption, we extract interaction information including subject, verb, object, its appearance description and interaction-related scores. Using the information, we extract instance mask tracks using SAM2 and VLM.
-                            </figcaption>
-                        </figure>
-                        <figure class="slide">
-                            <img src="images/dataset_statistics.png"
-                                    alt=""
-                                    data-fullsrc="images/dataset_statistics.png">
-                    
-                            <figcaption>
-                                <strong>Dataset Statistics.</strong> Our curated dataset, MATRIX-11K, consists of 11K videos with interaction-aware captions and corresponding instance mask tracks. 
-                            </figcaption>
-                        </figure>
-                    </div>
-                  
-                      
-                    
-                    <button class="slideshow-nav prev" aria-label="Previous slide" title="Previous">&#10094;</button>
-                    <button class="slideshow-nav next" aria-label="Next slide" title="Next">&#10095;</button>
-                    <!-- <button class="play-pause" aria-label="Pause autoplay" title="Pause autoplay"> -->
-                      <!-- <i class="fa fa-pause"></i>
-                    </button> -->
-                </div>
+
+            <p>
+                We present <strong>3DScenePrompt</strong>, a framework for <strong>scene-consistent, camera-controllable video generation</strong> that extends arbitrary-length input videos along user-specified camera trajectories while preserving scene geometry.
+                The key idea is a <strong>dual spatio-temporal conditioning</strong> strategy that conditions on both 
+                <span style="color:#0070C0;"><strong>temporal</strong></span> cues (last few frames for motion continuity) and 
+                <span style="color:#06B050;"><strong>spatial</strong></span> cues (geometry-aware views for scene consistency).
+            </p>
+
+            <p>
+                Directly reusing spatially adjacent frames can leak past dynamics into the future. To avoid this, we build a <strong>3D scene memory</strong> that stores only <strong>static geometry</strong>, reconstructed via dynamic SLAM and refined with a <strong>dynamic masking</strong> pipeline that removes moving objects.
+            </p>
+
+            <p>
+                From this memory, we render <strong>projected static views</strong> that act as <strong>3D scene prompts</strong>, giving geometrically accurate spatial guidance while temporal conditioning drives natural motion. 
+                This enables precise camera control, long-range spatial coherence, and efficient computation.
+            </p>
             </section>
-            <!-- Contents: Analysis -->
+          
+
+
+            
             <section id="analysis" class="section">
-                <h2>Analysis</h2>
-                <div class="image-container">
-                    <div class="image-content">
-                        <img src="images/fig_analysis_graph.png" class="img large-image" alt="Comparisons diagram" data-fullsrc="images/fig_analysis_graph.png">
-                    </div>
-                    <p class="image-caption"> (a) <strong>Influential layers</strong> : layers with high AAS that rank in the Top-10 for many videos. 
-                        <br>
-                        (b) <strong>Dominant layers</strong> : the influential layers whose mean AAS clearly separates successes from failures. </p>
+            <h2>Analysis</h2>
+
+            <!-- 🔹 Part 1: Importance -->
+            <h3>Importance of Eliminating Dynamic Regions</h3>
+            <div class="image-container">
+                <div class="image-content">
+                <img src="images/fig_analysis.png" class="img large-image" alt="Dynamic Masking illustration">
                 </div>
-                <p><strong>Influential Layer Candidates:</strong> We identify <strong>influential layers</strong> by rank-summing each layer's frequency in the AAS top-10 and its mean AAS, revealing that high alignment consistently concentrates in a small subset of layers.</p>
-                <p><strong>Dominant Layer Selection:</strong> Among the influential layers, we identify the <strong>interaction-dominant layers</strong> that most directly governs the outcomes, where the success gap is large and positive while the failure gap is large and negative relative to the overall mean.</p>
-                <p><strong>Relevance to Interaction-Awareness in Generated Videos:</strong> When attention map in the interaction-dominant layers concentrates on the corresponding subject/object/union regions, generations are correct and preferred by human raters; when attention is diffused or mislocalized, failrues are common.</p>
-            </section>
-            <!-- Contents: Framework -->
-            <section id="framework" class="section">
-                <h2>Framework</h2>
-                <p>Our analysis identifies that a small set of interaction-dominant layers align well with human-verified success and further improves interaction-awareness of the generated video.</p>
-                <p>Motivated by our analysis, <strong>MATRIX</strong> introduces Semantic Grounding Alignment (SGA) and Semantic Propagation Alignment (SPA) losses that directly align attention maps in the interaction-dominant layers with ground-truth mask tracks.</p> 
-                <div class="image-container">
-                    <div class="image-content">
-                        <img src="images/fig_framework.png" class="img large-image" alt="MATRIX Framework illustration">
-                    </div>
-                    <p class="image-caption">SGA and SPA supervise video-to-text and video-to-video attention directly with ground-truth instance mask tracks. We apply these losses only to the interaction-dominant layer, routing alignment where it is most effective, while leaving the remaining layers to preserve video quality.</p> 
+                <p class="image-caption">
+                <strong>Illustration of dynamic masking for static scene extraction.</strong><br>
+                (a) Without masking, moving objects create ghosting artifacts across frames.<br>
+                (b) With our dynamic masking pipeline, dynamic elements are identified and removed,
+                yielding clean static-only point clouds.
+                </p>
+            </div>
+
+            <p>
+                <strong>Dynamic masking</strong> plays a crucial role in separating motion from structure
+                in scene-consistent video generation. By removing transient moving objects before reconstructing
+                the 3D scene, it prevents ghosting artifacts and ensures that only
+                <strong>persistent static geometry</strong> is preserved.
+                This clean static representation enables <strong>accurate warping</strong> across viewpoints and
+                maintains spatial coherence throughout the generated video.
+            </p>
+
+            <!-- 🔹 Part 2: Pipeline -->
+            <h3>Dynamic Region Detection Pipeline</h3>
+            <div class="image-container">
+                <div class="image-content">
+                <img src="images/fig_dynamicmask_pipeline.png" class="img large-image" alt="Dynamic Region Detection Pipeline">
                 </div>
-                
-            </section>
-            <!-- Contents: Results -->
-            <section id="evaluation" class="section">
-                <h2>InterGenEval</h2>
-                <div class="image-container">
-                    <img src="images/InterGenEval.png" class="img large-image" alt="InterGenEval Illustration">
-                    <p class="image-caption"><strong>InterGenEval Protocol Pipeline</strong></p>               
-                </div>
+                <p class="image-caption">
+                <strong>Three-stage dynamic masking pipeline.</strong> Motion detection → Tracking → Propagation.
+                </p>
+            </div>
+            <p>
+                Our <strong>Dynamic Masking Pipeline</strong> refines motion region detection through a
+                three-stage process to produce complete object-level masks:
+            </p>
+
+            <p>
+                (1) <strong>Dynamic Thresholding</strong> — Optical flow differences detect pixel-level motion.<br>
+                (2) <strong>Backward Tracking</strong> — Using CoTracker3, sampled points are tracked backward
+                across all frames to aggregate motion evidence and identify objects that move at any point.<br>
+                (3) <strong>Mask Propagation</strong> — Aggregated motion cues in the first frame are propagated
+                to the entire video via SAM2, generating clean masks that remove moving elements while retaining
+                the static background for precise 3D reconstruction.
+            </p>
+
+            
             </section>
 
             <section id="results" class="section">
                 <h2>Results</h2>
-                <h3>Qualitative Comparisons</h3>
+                <!-- <h3>Qualitative Comparisons</h3>
                 <div class="slideshow-container">
                     <div class="slideshow" data-range="001-009" data-dir="videos" data-ext="mp4"></div>
                     <button class="slideshow-nav prev" aria-label="Previous slide" title="Previous">&#10094;</button>
                     <button class="slideshow-nav next" aria-label="Next slide" title="Next">&#10095;</button>
-                    <button class="play-pause" aria-label="Pause autoplay" title="Pause autoplay">
-                        <i class="fa fa-pause"></i>
-                      </button>
-                </div>
+                </div> -->
                 <!-- <h2>Results</h2> -->
-                <h3>Quantitative Comparisons</h3>     
+                <h3>Evaluation of Spatial and Geometric Consistency</h3>
                 <div class="table-container">
-                    <div class="table-wrap">
-                        <table class="advantages-table">
-                          <!-- <caption>InterGenEval / Human Fidelity / Video Quality</caption> -->
-                          <thead>
-                            <tr>
-                              <th rowspan="2" class="left">Methods</th>
-                              <th colspan="3">InterGenEval</th>
-                              <th colspan="1">Human Fidelity</th>
-                              <th colspan="2">Video Quality</th>
-                            </tr>
-                            <tr>
-                              <th>KISA <span class="up">↑</span></th>
-                              <th>SGI <span class="up">↑</span></th>
-                              <th>IF <span class="up">↑</span></th>
-                              <th>HA <span class="up">↑</span></th>
-                              <th>MS <span class="up">↑</span></th>
-                              <th>IQ <span class="up">↑</span></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td class="left">
-                                CogVideoX-2B-I2V
-                              </td>
-                              <td>0.420</td><td>0.470</td><td>0.445</td>
-                              <td class="second">0.937</td><td class="second">0.993</td><td class="second">69.69</td>
-                            </tr>
-                            <tr>
-                              <td class="left">
-                                CogVideoX-5B-I2V
-                              </td>
-                              <td>0.406</td><td>0.491</td><td>0.449</td>
-                              <td>0.936</td><td>0.987</td><td>69.66</td>
-                            </tr>
-                            <tr>
-                              <td class="left">
-                                Open-Sora-11B-I2V
-                              </td>
-                              <td>0.453</td><td>0.508</td><td>0.480</td>
-                              <td>0.891</td><td>0.992</td><td>63.32</td>
-                            </tr>
-                            <tr>
-                              <td class="left">
-                                TaVid
-                              </td>
-                              <td class="second">0.465</td><td class="second">0.522</td><td class="second">0.494</td>
-                              <td>0.917</td><td>0.991</td><td>68.90</td>
-                            </tr>
-                            <tr class="ours">
-                              <td class="left first"><strong>MATRIX (Ours)</strong> <span class="muted"></span></td>
-                              <td class="first"><strong>0.546</strong></td><td class="first"><strong>0.641</strong></td><td class="first"><strong>0.593</strong></td>
-                              <td class="first"><strong>0.954</strong></td><td><strong>0.994</strong></td><td><strong>69.73</strong></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                <h3>Ablation Studies</h3>
+                <div class="table-wrap">
+                    <table class="advantages-table">
+                    <thead>
+                        <tr>
+                        <th rowspan="2" class="left">Methods</th>
+                        <th colspan="4">RealEstate10K</th>
+                        <th colspan="4">DynPose-100K</th>
+                        </tr>
+                        <tr>
+                        <th>PSNR <span class="up">↑</span></th>
+                        <th>SSIM <span class="up">↑</span></th>
+                        <th>LPIPS <span class="down">↓</span></th>
+                        <th>MEt3R <span class="down">↓</span></th>
+                        <th>PSNR <span class="up">↑</span></th>
+                        <th>SSIM <span class="up">↑</span></th>
+                        <th>LPIPS <span class="down">↓</span></th>
+                        <th>MEt3R <span class="down">↓</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td class="left">DFoT</td>
+                        <td>18.30</td><td>0.596</td><td>0.308</td><td>0.181</td>
+                        <td>12.15</td><td>0.304</td><td>0.417</td><td>0.183</td>
+                        </tr>
+                        <tr class="ours">
+                        <td class="left first"><strong>3DScenePrompt (Ours)</strong></td>
+                        <td class="first"><strong>20.89</strong></td><td class="first"><strong>0.717</strong></td>
+                        <td class="first"><strong>0.212</strong></td><td class="first"><strong>0.0408</strong></td>
+                        <td class="first"><strong>13.05</strong></td><td class="first"><strong>0.367</strong></td>
+                        <td class="first"><strong>0.381</strong></td><td class="first"><strong>0.124</strong></td>
+                        </tr>
+                    </tbody>
+                    </table>
+                    <p class="image-caption" style="text-align: center; margin-top: 10px;">
+                    <strong>Evaluation of spatial and geometric consistency.</strong>
+                    We compare DFoT and <strong>3DScenePrompt</strong> on
+                    RealEstate10K and DynPose-100K. PSNR, SSIM, and LPIPS evaluate spatial consistency,
+                    while MEt3R measures geometric accuracy.
+                    </p>
+                </div>
+                </div>
+                <h3>Camera Controllability Evaluation</h3>
                 <div class="table-container">
-                    <div class="table-wrap">
-                        <table class="advantages-table" id="abl1">
-                        <thead>
-                            <tr>
-                            <th rowspan="2" class="roman sep"> </th>
-                            <th rowspan="2" class="left">Methods</th>
-                            <th colspan="3" class="sep">InterGenEval</th>
-                            <th colspan="1" class="sep">Human Fidelity</th>
-                            <th colspan="2" class="sep">Video Quality</th>
-                            </tr>
-                            <tr>
-                            <th>KISA ↑</th>
-                            <th>SGI ↑</th>
-                            <th>IF ↑</th>
-                            <th>HA ↑</th>
-                            <th>MS ↑</th>
-                            <th>IQ ↑</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="thick-top">
-                            <td class="roman sep">(I)</td>
-                            <td class="left">Baseline (CogVideoX-5B-I2V)</td>
-                            <td>0.406</td><td>0.491</td><td>0.449</td>
-                            <td>0.936</td><td>0.987</td><td>69.66</td>
-                            </tr>
-                            <tr class="thick-mid">
-                            <td class="roman sep">(II)</td>
-                            <td class="left">TaVid </td>
-                            <td>0.465</td><td>0.522</td><td>0.494</td>
-                            <td>0.917</td><td>0.991</td><td>68.90</td>
-                            </tr>
-                            <tr>
-                            <td class="roman sep">(III)</td>
-                            <td class="left">(I) + LoRA w/o layer selection</td>
-                            <td>0.445</td><td>0.526</td><td>0.486</td>
-                            <td>0.940</td><td>0.994</td><td class="second">69.77</td>
-                            </tr>
-                            <tr>
-                            <td class="roman sep">(IV)</td>
-                            <td class="left">(I) + LoRA w/ layer selection</td>
-                            <td>0.490</td><td class="second">0.594</td><td>0.542</td>
-                            <td>0.950</td><td>0.994</td><td>68.97</td>
-                            </tr>
-                            <tr>
-                            <td class="roman sep">(V)</td>
-                            <td class="left">(IV) + SPA loss</td>
-                            <td>0.451</td><td>0.540</td><td>0.496</td>
-                            <td>0.937</td><td class="first">0.995</td><td class="first">70.26</td>
-                            </tr>
-                            <tr>
-                            <td class="roman sep">(VI)</td>
-                            <td class="left">(IV) + SGA loss</td>
-                            <td class="second">0.509</td><td>0.592</td><td class="second">0.550</td>
-                            <td class="second">0.952</td><td>0.994</td><td>69.62</td>
-                            </tr>
-                            <tr class="ours thick-top thick-bottom">
-                            <td class="roman sep">(VII)</td>
-                            <td class="left"> <strong>(IV) + SPA loss + SGA loss (Ours)</strong></td>
-                            <td class="first"><strong>0.546</strong></td><td class="first"><strong>0.641</strong></td><td class="first"><strong>0.593</strong></td>
-                            <td class="first"><strong>0.954</strong></td><td class="second"><strong>0.994</strong></td><td>69.73</td>
-                            </tr>
-                        </tbody>
-                        </table>
-                    </div>
-                    </div>            
+                <div class="table-wrap">
+                    <table class="advantages-table">
+                    <thead>
+                        <tr>
+                        <th rowspan="2" class="left">Methods</th>
+                        <th colspan="3">DynPose-100K</th>
+                        </tr>
+                        <tr>
+                        <th>mRotErr (°) <span class="down">↓</span></th>
+                        <th>mTransErr <span class="down">↓</span></th>
+                        <th>mCamMC <span class="down">↓</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td class="left">MotionCtrl</td>
+                        <td>3.5654</td><td>7.8231</td><td>9.7834</td>
+                        </tr>
+                        <tr>
+                        <td class="left">CameraCtrl</td>
+                        <td>3.3273</td><td>9.5989</td><td>11.2122</td>
+                        </tr>
+                        <tr>
+                        <td class="left">FloVD</td>
+                        <td>3.4811</td><td>11.0302</td><td>12.6202</td>
+                        </tr>
+                        <tr>
+                        <td class="left">AC3D</td>
+                        <td>3.0675</td><td>9.7044</td><td>11.1634</td>
+                        </tr>
+                        <tr>
+                        <td class="left">DFoT</td>
+                        <td>2.3977</td><td>8.0866</td><td>9.2330</td>
+                        </tr>
+                        <tr class="ours">
+                        <td class="left first"><strong>3DScenePrompt (Ours)</strong></td>
+                        <td class="first"><strong>2.3772</strong></td>
+                        <td class="first"><strong>7.4174</strong></td>
+                        <td class="first"><strong>8.6352</strong></td>
+                        </tr>
+                    </tbody>
+                    </table>
+                    <p class="image-caption" style="text-align:center; margin-top:10px;">
+                    <strong>Evaluation of camera controllability.</strong>
+                    Lower mRotErr, mTransErr, and mCamMC indicate more accurate control over camera pose transitions.
+                    </p>
+                </div>
+                </div>
+
+
+                <h3>Video Generation Quality Evaluation</h3>
+                <div class="table-container">
+                <div class="table-wrap">
+                    <table class="advantages-table">
+                    <thead>
+                        <tr>
+                        <th rowspan="2" class="left">Methods</th>
+                        <th colspan="9">DynPose-100K</th>
+                        </tr>
+                        <tr>
+                        <th>FVD <span class="down">↓</span></th>
+                        <th>Overall Score <span class="up">↑</span></th>
+                        <th>Subject Consist <span class="up">↑</span></th>
+                        <th>Bg Consist <span class="up">↑</span></th>
+                        <th>Aesthetic Quality <span class="up">↑</span></th>
+                        <th>Imaging Quality <span class="up">↑</span></th>
+                        <th>Temporal Flicker <span class="up">↑</span></th>
+                        <th>Motion Smooth <span class="up">↑</span></th>
+                        <th>Dynamic Degree <span class="up">↑</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td class="left">MotionCtrl</td>
+                        <td>1017.42</td><td>0.5625</td><td>0.5158</td><td>0.7093</td><td>0.3157</td><td>0.3149</td><td>0.8297</td><td>0.8432</td><td>0.7900</td>
+                        </tr>
+                        <tr>
+                        <td class="left">CameraCtrl</td>
+                        <td>737.05</td><td>0.6280</td><td>0.6775</td><td>0.8238</td><td>0.3736</td><td>0.3888</td><td>0.6837</td><td>0.6955</td><td>0.9900</td>
+                        </tr>
+                        <tr>
+                        <td class="left">FloVD</td>
+                        <td>171.27</td><td>0.7273</td><td>0.7964</td><td>0.8457</td><td>0.4722</td><td>0.5546</td><td>0.7842</td><td>0.8364</td><td>0.9900</td>
+                        </tr>
+                        <tr>
+                        <td class="left">AC3D</td>
+                        <td>281.21</td><td>0.7428</td><td>0.8360</td><td>0.8674</td><td>0.4766</td><td>0.5381</td><td>0.8020</td><td>0.8673</td><td>1.0000</td>
+                        </tr>
+                        <tr class="ours">
+                        <td class="left first"><strong>3DScenePrompt (Ours)</strong></td>
+                        <td class="first"><strong>127.48</strong></td>
+                        <td class="first"><strong>0.7747</strong></td>
+                        <td class="first"><strong>0.8669</strong></td>
+                        <td class="first"><strong>0.8727</strong></td>
+                        <td class="first"><strong>0.4990</strong></td>
+                        <td class="first"><strong>0.5964</strong></td>
+                        <td class="first"><strong>0.8551</strong></td>
+                        <td class="first"><strong>0.9260</strong></td>
+                        <td class="first"><strong>1.0000</strong></td>
+                        </tr>
+                    </tbody>
+                    </table>
+                    <p class="image-caption" style="text-align:center; margin-top:10px;">
+                    <strong>Evaluation of video generation quality.</strong>
+                    FVD evaluates overall temporal quality (lower is better).  
+                    VBench++ metrics measure subject and background consistency, perceptual quality, and temporal smoothness (higher is better).
+                    </p>
+                </div>
+                </div>
+
+                <h3>Ablation Study</h3>
+                <div class="table-container">
+                <div class="table-wrap">
+                    <table class="advantages-table">
+                    <thead>
+                        <tr>
+                        <th rowspan="2" class="left">Methods</th>
+                        <th rowspan="2">Dynamic Mask&nbsp;&nbsp;<span style="font-family:monospace;">𝓜</span></th>
+                        <th colspan="4">DynPose-100K</th>
+                        </tr>
+                        <tr>
+                        <th>PSNR <span class="up">↑</span></th>
+                        <th>SSIM <span class="up">↑</span></th>
+                        <th>LPIPS <span class="down">↓</span></th>
+                        <th>MEt3R <span class="down">↓</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td class="left">Ours (n=1)</td>
+                        <td>✓</td>
+                        <td>13.0207</td><td>0.3732</td><td>0.3771</td><td>0.1248</td>
+                        </tr>
+                        <tr>
+                        <td class="left">Ours (n=4)</td>
+                        <td>✓</td>
+                        <td>13.0382</td><td>0.3733</td><td>0.3758</td><td>0.1249</td>
+                        </tr>
+                        <tr>
+                        <td class="left">Ours (n=L)</td>
+                        <td>✓</td>
+                        <td>13.0206</td><td>0.3631</td><td>0.3810</td><td>0.1235</td>
+                        </tr>
+                        <tr>
+                        <td class="left">Ours (n=7)</td>
+                        <td>✗</td>
+                        <td>12.2304</td><td>0.3063</td><td>0.3821</td><td>0.1349</td>
+                        </tr>
+                        <tr class="ours">
+                        <td class="left first"><strong>Ours (n=7)</strong></td>
+                        <td class="first">✓</td>
+                        <td class="first"><strong>13.0468</strong></td>
+                        <td class="first"><strong>0.3666</strong></td>
+                        <td class="first"><strong>0.3812</strong></td>
+                        <td class="first"><strong>0.1242</strong></td>
+                        </tr>
+                    </tbody>
+                    </table>
+
+                    <p class="image-caption" style="text-align:center; margin-top:10px;">
+                    <strong>Ablation study on dynamic masking.</strong>
+                    Removing the dynamic mask (<span style="font-family:monospace;">𝓜</span>) leads to degraded PSNR, SSIM,
+                    and higher MEt3R, confirming its importance for scene-consistent video generation. Here, <strong>n</strong> denotes the <em>number of retrieved frames</em> used for spatial conditioning.
+                    </p>
+                </div>
+                </div>
             </section>
             <!-- Contents: Conclusion -->
             <!-- <section id="conclusion" class="section">
@@ -522,7 +597,7 @@ url={https://arxiv.org/abs/2510.07310},
 
     <footer class="site-footer">
         <div class="container">
-            <p class="credit">Credit: The design of this project page is inspired by previous academic project pages, such as <a href="https://llm-grounded-diffusion.github.io/" target="_blank">LLM-grounded Diffusion</a>, <a href="https://describe-anything.github.io/" target="_blank">Describe-anything</a> and <a href="https://cvlab-kaist.github.io/VIRAL" target="_blank">VIRAL</a> .</p>
+            <p class="credit">Credit: The design of this project page is inspired by previous academic project pages, such as <a href="https://llm-grounded-diffusion.github.io/" target="_blank">LLM-grounded Diffusion</a>, <a href="https://describe-anything.github.io/" target="_blank">Describe-anything</a>, <a href="https://cvlab-kaist.github.io/VIRAL" target="_blank">VIRAL</a>, and <a href="https://cvlab-kaist.github.io/MATRIX/" target="_blank">MATRIX</a>.</p>
         </div>
     </footer>
 
@@ -544,16 +619,16 @@ url={https://arxiv.org/abs/2510.07310},
     }
     const captions = {
         "000": "At a kitchen counter, a student in a white shirt places a notebook on a wooden table. Cups and plates are scattered nearby, and sunlight comes in through the window. The action demonstrates placing the notebook on the flat surface.",
-        "002": "A woman in a red coat pushes a stroller along a park path with fallen leaves scattered around. Nearby, a child in a green hoodie jumps with excitement on the grassy field.",
-        "003": "Two boys are pushing each other playfully on a grassy field, while a dog wearing a blue harness is running in circles nearby.",
-        "004": "A girl in a yellow raincoat is patting another girl's shoulder in front of a school gate, while a boy behind them is skipping along the sidewalk.",
-        "005": "A girl pushes another girl on a tire swing at a park, while a man in the background is shaking hands with a boy near the picnic tables.",
-        "006": "A man walking past with yellow towel wipes the front panel or windshield of the red SUV.",
-        "007": "The woman in the wide-brimmed hat raises her silver travel mug to take a sip.",
-        "008": "The man in a pink suit picks up the red Coca-Cola can and takes a sip from it.",
-        "009": "The man with a sushi t-shirt puts the bitten donut into his mouth to eat it.",
+        "001": "A man in a black cap and t-shirt stands at the open door of a luxury car, conversing with another man inside the vehicle, in a parking lot with several cars and a bench under a clear sky, suggesting a casual yet professional setting. Two seconds later, the scene shifts to a sunlit parking lot where the same man in the black cap and t-shirt, now wearing a surgical mask, continues his conversation with another man in a black polo shirt and jeans, who is inside a black luxury sedan. The background features several cars and a building with a glass facade, indicating a commercial area.",
+        "002": "A young man with a beard and tied-back hair is seen standing in a modern, compact kitchen, holding a spoon over a cup at the sink, surrounded by cooking utensils and ingredients, indicating he is preparing a meal. The kitchen features a stainless steel sink, a black frying pan, and a cutting board with cheese and an orange, under warm lighting. Two seconds later, the same man, now identified by his bun hairstyle, is focused on cooking in the efficient kitchen, which includes a stove, a frying pan, and a cutting board with cheese and an orange slice. The kitchen is equipped with a refrigerator and open shelving filled with dishes and bottles, under a white subway tile backsplash.",
+        "003": "A bride in a white gown and a veil and a groom in a beige suit with long dreadlocks walk hand in hand down a narrow, unpaved path surrounded by lush greenery under an overcast sky, creating a serene atmosphere. The scene is intimate, with no other people or structures in sight. Two seconds later, the couple continues their walk on a secluded path, the bride's dress flowing and the groom's suit blending with the natural surroundings. The soft light from the overcast sky enhances the romantic and peaceful mood of their wedding day.",
+        "004": "A man in sunglasses and a black shirt stands in a narrow alleyway, looking directly at the camera with a neutral expression. The alley is flanked by ancient stone walls, and the scene is bathed in sunlight, casting sharp shadows and highlighting the textures of the stones. The clear blue sky suggests a warm, sunny day in a historic urban setting. As time passes, the man remains in the alley, the sunlight continuing to accentuate the textures of the stone walls and the cobblestone path, maintaining the tranquil atmosphere of the scene.",
+        "005": "Four men are gathered in a cozy living room, engaging in a lively discussion. Initially, they are seen seated on a beige sofa with a red and white striped cushion, a dark wooden armchair, and a glass-topped coffee table, surrounded by a framed picture, a mirror, and a plant, with a 'Coca-Cola' sign in the background. Later, the setting shifts slightly with two men now on a sofa, one holding a glass bottle, and the other barefoot, while two others sit on a gray armchair and a stool, respectively, with an 'Arsenal' sign visible, indicating a sports-related theme.",
+        "006": "A shirtless man with a well-defined physique is seen performing push-ups on artificial turf in a gym, wearing a white cap and black shorts. He is surrounded by various fitness equipment, including stationary bikes and a rowing machine, under bright lighting. His expression is one of intense focus, highlighting the seriousness of his workout. The same scene continues with the man maintaining his push-up position, emphasizing his muscular physique and the intensity of his exercise routine. Contrary to the detailed descriptions, the overall summary mistakenly mentions the man wearing a red shirt, which is not supported by the detailed frame descriptions.",
+        "007": "The video features a bustling city street scene with pedestrians and vehicles, including a red bus and a white van, moving along the road. The urban landscape is dotted with green trees and modern buildings, with a clear blue sky overhead. A red planter box with a blue broom and yellow bucket is visible on the sidewalk, adding a splash of color. As the video continues, the scene shifts to a sunny day in Shanghai, where people walk and converse on the sidewalks. The architecture combines traditional and modern styles, with a leafless tree and a red bench with greenery adding to the urban charm. Overlaying text in Chinese suggests the footage is from a Chinese media source.",
+        "008": "A young man with slicked-back hair and a dark blue t-shirt is seen in a food court, holding a partially eaten hot dog and looking at it with a focused expression. The background is blurred, indicating a bustling environment with other patrons and food items. Two seconds later, the same man, now with slicked-back dark hair and a black backpack, takes a selfie while holding a sesame seed-encrusted baguette. His content expression and the lively atmosphere of the food court are highlighted by the blurred background. Contrary to the detailed scenes, the overall description inaccurately mentions a young woman eating a hot dog.",
+        "009": "A woman with blonde hair, dressed in a red top and floral skirt, is seen standing in a modern showroom, gesturing towards a black sports car with red accents. The showroom features a minimalist design with a glass partition, a sleek black chair, and a table with a laptop, all under bright lighting that highlights the car's glossy finish and the woman's attire. Two seconds later, the same woman, now in a red sweater and floral skirt, stands at the threshold of a glass meeting room, observing a man seated at a table with a laptop, engaged in a phone conversation. The room's minimalist design, with a whiteboard and black chairs, suggests a professional setting.",
         "010": "The man in a blue shirt feeds a strawberry to the woman in a white chef coat.",
-        "001": "The woman in a white dress cuts the wedding cake with a knife she's holding."
     };
 
     document.querySelectorAll('.slideshow[data-range]').forEach(slideshow => {
@@ -616,6 +691,30 @@ url={https://arxiv.org/abs/2510.07310},
         let autoplayInterval = null;
         let isPlaying = true;
 
+
+        const dotsContainer = container.querySelector('.slideshow-dots');
+            if (dotsContainer) {
+                dotsContainer.innerHTML = ''; // 초기화
+
+                // dot 생성
+                slides.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'slideshow-dot';
+                    if (i === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => showSlide(i));
+                    dotsContainer.appendChild(dot);
+                });
+            }
+
+            // dot 상태 갱신 함수
+            function updateDots() {
+                if (!dotsContainer) return;
+                const dots = dotsContainer.querySelectorAll('.slideshow-dot');
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentSlide);
+                });
+            }
+
         function showSlide(n) {
             slides.forEach(slide => slide.classList.remove('active'));
             currentSlide = (n + slides.length) % slides.length;
@@ -624,6 +723,7 @@ url={https://arxiv.org/abs/2510.07310},
             slides.forEach(s => { const v = s.querySelector('video'); if (v) v.pause(); });
             const v = slides[currentSlide].querySelector('video');
             if (v) { v.muted = true; v.play().catch(()=>{}); }
+            updateDots();
         }
 
         function startAutoplay() {
@@ -642,8 +742,21 @@ url={https://arxiv.org/abs/2510.07310},
 
         function changeSlide(step) {
             showSlide(currentSlide + step);
-            if (isPlaying) { stopAutoplay(); startAutoplay(); }
+
+            // 🔹 새 슬라이드의 비디오를 즉시 재생
+            const activeSlide = slides[currentSlide];
+            const video = activeSlide.querySelector('video');
+            if (video) {
+                video.currentTime = 0; // 처음부터 재생
+                video.play().catch(() => {}); // 자동 재생 실패 방지
+            }
+
+            if (isPlaying) { 
+                stopAutoplay(); 
+                startAutoplay(); 
+            }
         }
+
 
         // Initialize this slideshow
         showSlide(0);
