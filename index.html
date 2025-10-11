@@ -1,0 +1,731 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation</title>
+
+    <!-- Favicon references -->
+    <link rel="icon" type="image/png" href="./images/logo.png">
+    <link rel="apple-touch-icon" href="./images/logo.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <meta
+        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        name="description" />
+    <meta
+        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        property="og:title" />
+    <meta
+        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        property="og:description" />
+    <meta
+        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        property="twitter:title" />
+    <meta
+        content="3D Scene Prompt for Scene-Consistent Camera-Controllable Video Generation"
+        property="twitter:description" />
+    <meta property="og:type" content="website" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"
+        crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Varela+Round&display=swap"
+        rel="stylesheet">
+    <link href="style.css?" rel="stylesheet" type="text/css" />
+
+    <!-- 🔎 Added minimal CSS for click‑to‑zoom lightbox -->
+    <style>
+      /* make images clearly zoomable */
+      img.zoomable { cursor: zoom-in; transition: transform .2s ease; }
+
+      /* fullscreen overlay */
+      .lightbox-overlay {
+        position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+        background: rgba(0,0,0,.9); z-index: 10000;
+      }
+      .lightbox-overlay.active { display: flex; }
+      .lightbox-overlay img { max-width: 95vw; max-height: 95vh; box-shadow: 0 10px 40px rgba(0,0,0,.6); border-radius: 8px; }
+      /* show zoom-out cursor while overlay is open */
+      .lightbox-overlay, .lightbox-overlay * { cursor: zoom-out; }
+
+      /* prevent background scroll when overlay is open */
+      body.no-scroll { overflow: hidden; }
+    </style>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']]
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container">
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#dataset">Dataset</a></li>
+                    <li><a href="#analysis">Analysis</a></li>
+                    <li><a href="#framework">Framework</a></li>
+                    <li><a href="#evaluation">Evaluation</a></li>
+                    <li><a href="#results">Results</a></li>
+                    <li><a href="#citation">Citation</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero-section">
+        <div class="container">
+            <div class="title-row">
+                <div class="title-flex">
+                    <video class="title-video" autoplay muted loop playsinline>
+                        <source src="images/logo_moving.mp4" type="video/mp4">
+                    </video>
+                   
+                    <div class="title-text-block">
+                    <h1 class="title">
+                        <span class="gradient-text">3D Scene Prompt</span> for Scene-Consistent Camera-Controllable Video Generation
+                    </h1>
+                    <h1 class="subtitle">arXiv 2025</h1>
+                </div>
+                </div>
+            </div>
+            <!-- Author Information -->
+            <div class="base-row author-row">
+                <div class="base-col author-col">
+                    <a href="https://scholar.google.com/citations?user=0H3dcPoAAAAJ&hl=en" target="_blank" class="author-text">
+                        Joungbin Lee<sup>1</sup><span class="equal-author">*</span>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://crepejung00.github.io" target="_blank" class="author-text">
+                        Jaewoo Jung<sup>1</sup><span class="equal-author">*</span>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://onground-korea.github.io" target="_blank" class="author-text">
+                        Jisang Han<sup>1</sup><span class="equal-author">*</span>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://scholar.google.com/citations?user=D3h3NxwAAAAJ&hl=en" target="_blank" class="author-text">
+                        <strong>Takuya Narihira</strong><sup>2</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://ai.sony/people/Kazumi-Fukuda/" target="_blank" class="author-text">
+                        <strong>Kazumi Fukuda</strong><sup>2</sup>
+                    </a>
+                </div>
+            </div>
+
+            <div class="base-row author-row">
+                <div class="base-col author-col">
+                    <a href="https://j0seo.github.io" target="_blank" class="author-text">
+                        <strong>Junyoung Seo</strong><sup>1</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://sunghwanhong.github.io" target="_blank" class="author-text">
+                        <strong>Sunghwan Hong</strong><sup>3</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://www.yukimitsufuji.com" target="_blank" class="author-text">
+                        <strong>Yuki Mitsufuji</strong><sup>2,4</sup><span class="corresponding-author">†</span>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://cvlab.kaist.ac.kr/members/faculty" target="_blank" class="author-text">
+                        <strong>Seungryong Kim</strong><sup>1</sup><span class="corresponding-author">†</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Author Affiliations -->
+            <div class="base-row author-row">
+                <div class="base-col author-col affiliations">
+                    <sup>1</sup>KAIST AI &nbsp;&nbsp;
+                    <sup>2</sup>Sony AI &nbsp;&nbsp;
+                    <sup>3</sup>ETH Zürich &nbsp;&nbsp;
+                    <sup>4</sup>Sony Group Corporation
+                    <br><br>
+                    <span class="equal-author-note">*</span> Equal contribution &nbsp;&nbsp;
+                    <span class="corresponding-author-note">†</span> Co-corresponding authors
+                </div>
+            </div>
+            <!-- Links -->
+            <div class="link-labels base-row"> 
+                <div class="base-col icon-col"><a href="https://arxiv.org/pdf/2510.07310" target="_blank"
+                        class="link-block">
+                        <i class="fa fas fa-file-text main-icon" style="font-size: 60px"></i>
+                        <strong class="link-labels-text">Paper</strong>
+                    </a></div>
+                <div class="base-col icon-col"><a href='https://github.com/cvlab-kaist/MATRIX' class="link-block">
+                        <i class="fa fa-github main-icon" style="font-size: 60px"></i>
+                        <strong class="link-labels-text">Code</strong>
+                    </a></div>
+                <div class="base-col icon-col"><a href="#citation" class="link-block">
+                        <i class="fa fa-graduation-cap main-icon" style="font-size: 60px"></i>
+                        <strong class="link-labels-text">Citation</strong>
+                    </a></div>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            
+            <!-- Contents: TL;DR -->
+            
+            <section id="teaser" class="section">
+                <div class="tldr">
+                    <b>TL;DR</b>: MATRIX identifies interaction-dominant layers in video DiTs and introduces a simple yet effective regularization that aligns their attention to multi-instance mask tracks, resulting in more interaction-aware video generation.
+                </div>
+                <h2>Teaser</h2>
+                <div class="video-container">
+                    <video class="results_video" autoplay muted loop playsinline>
+                        <source src="videos/teaser_000.mp4" type="video/mp4">
+                    </video>
+                    <p class="image-caption"> <strong>Text Prompt:</strong> At a kitchen counter, a student in a white shirt places a notebook on a wooden table. Cups and plates are scattered nearby, and sunlight comes in through the window. The action demonstrates placing the notebook on the flat surface.</p>
+                
+                    <video class="results_video" autoplay muted loop playsinline>
+                        <source src="videos/teaser_001.mp4" type="video/mp4">
+                    </video>
+                    <p class="image-caption"> <strong>Text Prompt:</strong> A man in a white t-shirt lifts a large box from the ground near a delivery truck on a narrow street.</p>
+                
+                    <video class="results_video" autoplay muted loop playsinline>
+                        <source src="videos/teaser_010.mp4" type="video/mp4">
+                    </video>
+                    <p class="image-caption"> <strong>Text Prompt:</strong> The man in a blue shirt feeds a strawberry to the woman in a white chef coat.</p>
+                
+                </div>
+                
+                <!-- <div class="slideshow-container">
+                    <div class="slideshow" data-range="000-011" data-dir="videos" data-ext="mp4"></div>
+                    <button class="slideshow-nav prev" aria-label="Previous slide" title="Previous">&#10094;</button>
+                    <button class="slideshow-nav next" aria-label="Next slide" title="Next">&#10095;</button>
+                    <button class="play-pause" aria-label="Pause autoplay" title="Pause autoplay">
+                        <i class="fa fa-pause"></i>
+                      </button>
+                </div> -->
+                
+            </section>
+            <!-- Contents: Overview -->
+            <div id="overview" class="base-row section">
+                <h2>Overview</h2>
+                <p class="paragraph">
+                    <!---
+                    Recent video diffusion models can generate high-quality videos but often fail to correctly represent multi-object interactions — e.g., losing track of who does what to whom or drifting identities over time. MATRIX tackles this by first analyzing how DiTs internally bind text and video tokens, revealing that semantic grounding and temporal propagation of interactions emerge only in a few critical attention layers. 
+                    It then fine-tunes just those layers using SGA + SPA losses aligned with multi-instance mask tracks, enabling efficient improvement without retraining the whole model. To support both analysis and fair benchmarking, the authors release MATRIX-11K, a large dataset of interaction-rich videos, and InterGenEval, a new protocol to measure interaction fidelity beyond standard quality metrics.
+                    -->
+                    We conduct a systematic analysis that formalizes interaction as two perspectives of video DiTs: <strong>semantic grounding</strong> and <strong>semantic propagation</strong>.
+                    We find both effects concentrate in a small subset of interaction-dominant layers. 
+                    Motivated by this, we introduce <strong>MATRIX</strong>, a simple and effective regularization that aligns attention in specific layers of video DiTs with multi-instance mask tracks, enhancing interaction fidelity and semantic alignment while reducing drift and hallucination. 
+                </p>
+            </div>
+            <div class="image-container">
+                <div class="image-content">
+                    <img src="images/teaser.png" class="img large-image" alt="MATRIX teaser">
+                </div>
+            </div>
+            <div>
+                <p>
+                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
+                    <strong>MATRIX-11K</strong> Dataset — 11K videos with interaction-aware captions and instance-level mask tracks.
+                </p>
+                <p>
+                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
+                    <strong>First systematic analysis</strong> of how Video DiTs encode semantic grounding and semantic propagation, analyzed via 3D full attentions, identifying interaction-dominant layers.
+                </p>
+                <p>
+                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
+                    <strong>MATRIX</strong> Framework — a simple yet effective regularization that aligns attention in interaction-dominant layers with multi-instance mask tracks via two terms, including Semantic Grounding Alignment (SGA) and Semantic Propagation Alignment (SPA) losses. 
+                </p>
+                <p>
+                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
+                    <strong>InterGenEval</strong> Protocol — an interaction-aware evaluation protocol that measures Key Interaction Semantic Alignment (KISA), Semantic Grounding Integrity (SGI), along with Semantic Propagation Integrity (SPI), and Interaction Fidelity (IF).
+                </p>
+                <p>
+                    <img class="paragraph-image" src="images/logo.png" alt="MATRIX robot" />
+                    <strong>State-of-the-art</strong> performance — significant interaction fidelity gains over baselines while maintaining video quality.
+                </p>
+            </div>
+            <!-- Contents: Dataset -->
+            <section id="dataset" class="section">
+                <h2>Dataset</h2>
+                <h3>Our Dataset Curation Pipeline</h3>
+                <div class="image-container">
+                    <div class="image-content">
+                        <img src="images/fig_data_pipeline.png" class="img large-image" alt="MATRIX-11K illustration" data-fullsrc="images/fig_data_pipeline.png">
+                    </div>
+                    <p class="image-caption">  <strong>Top</strong> : An LLM (a) identifies interaction triplets, (b) filters them using Dynamism and Contactness, and (c) extracts per-ID appearance descriptions. 
+                    <strong>Bottom</strong> : A VLM then verifies candidate to select an anchor frame, from which SAM2 propagates masks to produce instance mask tracks.  </p>
+                </div>
+                <h3>Curated Dataset Examples</h3>
+                <div class="slideshow-container">
+                    <div class="slideshow">
+                        <figure class="slide">
+                            <img src="images/dataset_example.png"
+                                alt=""
+                                data-fullsrc="images/dataset_example.png">
+                    
+                            <figcaption>
+                                <strong>Dataset Example.</strong> Given a video and a caption, we extract interaction information including subject, verb, object, its appearance description and interaction-related scores. Using the information, we extract instance mask tracks using SAM2 and VLM.
+                            </figcaption>
+                        </figure>
+                        <figure class="slide">
+                            <img src="images/dataset_example2.png"
+                                    alt=""
+                                    data-fullsrc="images/dataset_example2.png">
+                    
+                            <figcaption>
+                                <strong>Dataset Example.</strong> Given a video and a caption, we extract interaction information including subject, verb, object, its appearance description and interaction-related scores. Using the information, we extract instance mask tracks using SAM2 and VLM.
+                            </figcaption>
+                        </figure>
+                        <figure class="slide">
+                            <img src="images/dataset_statistics.png"
+                                    alt=""
+                                    data-fullsrc="images/dataset_statistics.png">
+                    
+                            <figcaption>
+                                <strong>Dataset Statistics.</strong> Our curated dataset, MATRIX-11K, consists of 11K videos with interaction-aware captions and corresponding instance mask tracks. 
+                            </figcaption>
+                        </figure>
+                    </div>
+                  
+                      
+                    
+                    <button class="slideshow-nav prev" aria-label="Previous slide" title="Previous">&#10094;</button>
+                    <button class="slideshow-nav next" aria-label="Next slide" title="Next">&#10095;</button>
+                    <!-- <button class="play-pause" aria-label="Pause autoplay" title="Pause autoplay"> -->
+                      <!-- <i class="fa fa-pause"></i>
+                    </button> -->
+                </div>
+            </section>
+            <!-- Contents: Analysis -->
+            <section id="analysis" class="section">
+                <h2>Analysis</h2>
+                <div class="image-container">
+                    <div class="image-content">
+                        <img src="images/fig_analysis_graph.png" class="img large-image" alt="Comparisons diagram" data-fullsrc="images/fig_analysis_graph.png">
+                    </div>
+                    <p class="image-caption"> (a) <strong>Influential layers</strong> : layers with high AAS that rank in the Top-10 for many videos. 
+                        <br>
+                        (b) <strong>Dominant layers</strong> : the influential layers whose mean AAS clearly separates successes from failures. </p>
+                </div>
+                <p><strong>Influential Layer Candidates:</strong> We identify <strong>influential layers</strong> by rank-summing each layer's frequency in the AAS top-10 and its mean AAS, revealing that high alignment consistently concentrates in a small subset of layers.</p>
+                <p><strong>Dominant Layer Selection:</strong> Among the influential layers, we identify the <strong>interaction-dominant layers</strong> that most directly governs the outcomes, where the success gap is large and positive while the failure gap is large and negative relative to the overall mean.</p>
+                <p><strong>Relevance to Interaction-Awareness in Generated Videos:</strong> When attention map in the interaction-dominant layers concentrates on the corresponding subject/object/union regions, generations are correct and preferred by human raters; when attention is diffused or mislocalized, failrues are common.</p>
+            </section>
+            <!-- Contents: Framework -->
+            <section id="framework" class="section">
+                <h2>Framework</h2>
+                <p>Our analysis identifies that a small set of interaction-dominant layers align well with human-verified success and further improves interaction-awareness of the generated video.</p>
+                <p>Motivated by our analysis, <strong>MATRIX</strong> introduces Semantic Grounding Alignment (SGA) and Semantic Propagation Alignment (SPA) losses that directly align attention maps in the interaction-dominant layers with ground-truth mask tracks.</p> 
+                <div class="image-container">
+                    <div class="image-content">
+                        <img src="images/fig_framework.png" class="img large-image" alt="MATRIX Framework illustration">
+                    </div>
+                    <p class="image-caption">SGA and SPA supervise video-to-text and video-to-video attention directly with ground-truth instance mask tracks. We apply these losses only to the interaction-dominant layer, routing alignment where it is most effective, while leaving the remaining layers to preserve video quality.</p> 
+                </div>
+                
+            </section>
+            <!-- Contents: Results -->
+            <section id="evaluation" class="section">
+                <h2>InterGenEval</h2>
+                <div class="image-container">
+                    <img src="images/InterGenEval.png" class="img large-image" alt="InterGenEval Illustration">
+                    <p class="image-caption"><strong>InterGenEval Protocol Pipeline</strong></p>               
+                </div>
+            </section>
+
+            <section id="results" class="section">
+                <h2>Results</h2>
+                <h3>Qualitative Comparisons</h3>
+                <div class="slideshow-container">
+                    <div class="slideshow" data-range="001-009" data-dir="videos" data-ext="mp4"></div>
+                    <button class="slideshow-nav prev" aria-label="Previous slide" title="Previous">&#10094;</button>
+                    <button class="slideshow-nav next" aria-label="Next slide" title="Next">&#10095;</button>
+                    <button class="play-pause" aria-label="Pause autoplay" title="Pause autoplay">
+                        <i class="fa fa-pause"></i>
+                      </button>
+                </div>
+                <!-- <h2>Results</h2> -->
+                <h3>Quantitative Comparisons</h3>     
+                <div class="table-container">
+                    <div class="table-wrap">
+                        <table class="advantages-table">
+                          <!-- <caption>InterGenEval / Human Fidelity / Video Quality</caption> -->
+                          <thead>
+                            <tr>
+                              <th rowspan="2" class="left">Methods</th>
+                              <th colspan="3">InterGenEval</th>
+                              <th colspan="1">Human Fidelity</th>
+                              <th colspan="2">Video Quality</th>
+                            </tr>
+                            <tr>
+                              <th>KISA <span class="up">↑</span></th>
+                              <th>SGI <span class="up">↑</span></th>
+                              <th>IF <span class="up">↑</span></th>
+                              <th>HA <span class="up">↑</span></th>
+                              <th>MS <span class="up">↑</span></th>
+                              <th>IQ <span class="up">↑</span></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td class="left">
+                                CogVideoX-2B-I2V
+                              </td>
+                              <td>0.420</td><td>0.470</td><td>0.445</td>
+                              <td class="second">0.937</td><td class="second">0.993</td><td class="second">69.69</td>
+                            </tr>
+                            <tr>
+                              <td class="left">
+                                CogVideoX-5B-I2V
+                              </td>
+                              <td>0.406</td><td>0.491</td><td>0.449</td>
+                              <td>0.936</td><td>0.987</td><td>69.66</td>
+                            </tr>
+                            <tr>
+                              <td class="left">
+                                Open-Sora-11B-I2V
+                              </td>
+                              <td>0.453</td><td>0.508</td><td>0.480</td>
+                              <td>0.891</td><td>0.992</td><td>63.32</td>
+                            </tr>
+                            <tr>
+                              <td class="left">
+                                TaVid
+                              </td>
+                              <td class="second">0.465</td><td class="second">0.522</td><td class="second">0.494</td>
+                              <td>0.917</td><td>0.991</td><td>68.90</td>
+                            </tr>
+                            <tr class="ours">
+                              <td class="left first"><strong>MATRIX (Ours)</strong> <span class="muted"></span></td>
+                              <td class="first"><strong>0.546</strong></td><td class="first"><strong>0.641</strong></td><td class="first"><strong>0.593</strong></td>
+                              <td class="first"><strong>0.954</strong></td><td><strong>0.994</strong></td><td><strong>69.73</strong></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                <h3>Ablation Studies</h3>
+                <div class="table-container">
+                    <div class="table-wrap">
+                        <table class="advantages-table" id="abl1">
+                        <thead>
+                            <tr>
+                            <th rowspan="2" class="roman sep"> </th>
+                            <th rowspan="2" class="left">Methods</th>
+                            <th colspan="3" class="sep">InterGenEval</th>
+                            <th colspan="1" class="sep">Human Fidelity</th>
+                            <th colspan="2" class="sep">Video Quality</th>
+                            </tr>
+                            <tr>
+                            <th>KISA ↑</th>
+                            <th>SGI ↑</th>
+                            <th>IF ↑</th>
+                            <th>HA ↑</th>
+                            <th>MS ↑</th>
+                            <th>IQ ↑</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="thick-top">
+                            <td class="roman sep">(I)</td>
+                            <td class="left">Baseline (CogVideoX-5B-I2V)</td>
+                            <td>0.406</td><td>0.491</td><td>0.449</td>
+                            <td>0.936</td><td>0.987</td><td>69.66</td>
+                            </tr>
+                            <tr class="thick-mid">
+                            <td class="roman sep">(II)</td>
+                            <td class="left">TaVid </td>
+                            <td>0.465</td><td>0.522</td><td>0.494</td>
+                            <td>0.917</td><td>0.991</td><td>68.90</td>
+                            </tr>
+                            <tr>
+                            <td class="roman sep">(III)</td>
+                            <td class="left">(I) + LoRA w/o layer selection</td>
+                            <td>0.445</td><td>0.526</td><td>0.486</td>
+                            <td>0.940</td><td>0.994</td><td class="second">69.77</td>
+                            </tr>
+                            <tr>
+                            <td class="roman sep">(IV)</td>
+                            <td class="left">(I) + LoRA w/ layer selection</td>
+                            <td>0.490</td><td class="second">0.594</td><td>0.542</td>
+                            <td>0.950</td><td>0.994</td><td>68.97</td>
+                            </tr>
+                            <tr>
+                            <td class="roman sep">(V)</td>
+                            <td class="left">(IV) + SPA loss</td>
+                            <td>0.451</td><td>0.540</td><td>0.496</td>
+                            <td>0.937</td><td class="first">0.995</td><td class="first">70.26</td>
+                            </tr>
+                            <tr>
+                            <td class="roman sep">(VI)</td>
+                            <td class="left">(IV) + SGA loss</td>
+                            <td class="second">0.509</td><td>0.592</td><td class="second">0.550</td>
+                            <td class="second">0.952</td><td>0.994</td><td>69.62</td>
+                            </tr>
+                            <tr class="ours thick-top thick-bottom">
+                            <td class="roman sep">(VII)</td>
+                            <td class="left"> <strong>(IV) + SPA loss + SGA loss (Ours)</strong></td>
+                            <td class="first"><strong>0.546</strong></td><td class="first"><strong>0.641</strong></td><td class="first"><strong>0.593</strong></td>
+                            <td class="first"><strong>0.954</strong></td><td class="second"><strong>0.994</strong></td><td>69.73</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                    </div>            
+            </section>
+            <!-- Contents: Conclusion -->
+            <!-- <section id="conclusion" class="section">
+                <h2>Conclusion</h2>
+
+                <p>In this work, we propose MATRIX, a simple yet effective regularization terms that align the attention maps of 3D full attention in the interaction-dominant layers with ground truth instance mask tracks of subject/object/verb regions. 
+                    Our approach significantly improves interaction fidelity, strengthens noun/verb grounding, and reduces identity drift and duplication without degrading overall video quality. Ablations further highlight the critical role of layer selection and the complementary contributions of SGA and SPA.</p>
+            </section> -->
+            <!-- Contents: Citation -->
+            <div class="citation add-top-padding">
+                <h1 id="citation">Citation</h1>
+                <p> If you use this work or find it helpful, please consider citing: </p>
+                <pre id="codecell0">
+@misc{jin2025matrixmasktrackalignment,
+title={MATRIX: Mask Track Alignment for Interaction-aware Video Generation}, 
+author={Siyoon Jin and Seongchan Kim and Dahyun Chung and Jaeho Lee and Hyunwook Choi and Jisu Nam and Jiyoung Kim and Seungryong Kim},
+year={2025},
+eprint={2510.07310},
+archivePrefix={arXiv},
+primaryClass={cs.CV},
+url={https://arxiv.org/abs/2510.07310}, 
+}
+                </pre>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p class="credit">Credit: The design of this project page is inspired by previous academic project pages, such as <a href="https://llm-grounded-diffusion.github.io/" target="_blank">LLM-grounded Diffusion</a>, <a href="https://describe-anything.github.io/" target="_blank">Describe-anything</a> and <a href="https://cvlab-kaist.github.io/VIRAL" target="_blank">VIRAL</a> .</p>
+        </div>
+    </footer>
+
+    <script>
+    function toggleMute(element) {
+        const video = element.parentElement.querySelector('video');
+        const icon = element.querySelector('i');
+        const text = element.querySelector('.unmute-text');
+        
+        if (video.muted) {
+            video.muted = false;
+            icon.className = 'fa fa-volume-up';
+            text.textContent = 'Mute';
+        } else {
+            video.muted = true;
+            icon.className = 'fa fa-volume-off';
+            text.textContent = 'Click to unmute';
+        }
+    }
+    const captions = {
+        "000": "At a kitchen counter, a student in a white shirt places a notebook on a wooden table. Cups and plates are scattered nearby, and sunlight comes in through the window. The action demonstrates placing the notebook on the flat surface.",
+        "002": "A woman in a red coat pushes a stroller along a park path with fallen leaves scattered around. Nearby, a child in a green hoodie jumps with excitement on the grassy field.",
+        "003": "Two boys are pushing each other playfully on a grassy field, while a dog wearing a blue harness is running in circles nearby.",
+        "004": "A girl in a yellow raincoat is patting another girl's shoulder in front of a school gate, while a boy behind them is skipping along the sidewalk.",
+        "005": "A girl pushes another girl on a tire swing at a park, while a man in the background is shaking hands with a boy near the picnic tables.",
+        "006": "A man walking past with yellow towel wipes the front panel or windshield of the red SUV.",
+        "007": "The woman in the wide-brimmed hat raises her silver travel mug to take a sip.",
+        "008": "The man in a pink suit picks up the red Coca-Cola can and takes a sip from it.",
+        "009": "The man with a sushi t-shirt puts the bitten donut into his mouth to eat it.",
+        "010": "The man in a blue shirt feeds a strawberry to the woman in a white chef coat.",
+        "001": "The woman in a white dress cuts the wedding cake with a knife she's holding."
+    };
+
+    document.querySelectorAll('.slideshow[data-range]').forEach(slideshow => {
+    const [startStr, endStr] = slideshow.dataset.range.split('-').map(s => s.trim());
+    const pad = Math.max(startStr.length, endStr.length);
+    const start = parseInt(startStr, 10), end = parseInt(endStr, 10);
+    const dir = (slideshow.dataset.dir || '').replace(/\/?$/, '/');
+    const ext = (slideshow.dataset.ext || 'mp4').replace(/^\./, '');
+
+    for (let i = start; i <= end; i++) {
+        const id = String(i).padStart(pad, '0');
+
+        const fig = document.createElement('figure');
+        fig.className = 'slide';
+        if (i === start) fig.classList.add('active');
+
+        const video = document.createElement('video');
+        video.className = 'video';
+        video.autoplay = true; video.muted = true; video.loop = true; video.playsInline = true;
+
+        const source = document.createElement('source');
+        source.src = `${dir}${id}.${ext}`;
+        source.type = `video/${ext}`;
+        video.appendChild(source);
+
+        const cap = document.createElement('figcaption');
+        cap.className = 'caption';
+        cap.textContent = captions[id] || `[${id}]`;
+
+        fig.appendChild(video);
+        fig.appendChild(cap);
+        slideshow.appendChild(fig);
+    }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const videos = document.querySelectorAll('video');
+        videos.forEach(video => {
+            video.addEventListener('play', function() {
+                const overlay = this.parentElement.querySelector('.unmute-overlay');
+                if (overlay) overlay.style.opacity = '0.8';
+            });
+            
+            video.addEventListener('pause', function() {
+                const overlay = this.parentElement.querySelector('.unmute-overlay');
+                if (overlay) overlay.style.opacity = '0.8';
+            });
+        });
+
+    // Initialize all slideshows
+    document.querySelectorAll('.slideshow-container').forEach(container => {
+        const slideshow = container.querySelector('.slideshow');
+        if (!slideshow) return;
+        const slides = slideshow.querySelectorAll('.slide');
+        if (!slides.length) return;
+        const prevButton = container.querySelector('.slideshow-nav.prev');
+        const nextButton = container.querySelector('.slideshow-nav.next');
+        const playPauseButton = container.querySelector('.play-pause');
+        
+        let currentSlide = 0;
+        let autoplayInterval = null;
+        let isPlaying = true;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+
+            slides.forEach(s => { const v = s.querySelector('video'); if (v) v.pause(); });
+            const v = slides[currentSlide].querySelector('video');
+            if (v) { v.muted = true; v.play().catch(()=>{}); }
+        }
+
+        function startAutoplay() {
+            if (autoplayInterval || slides.length < 2) return;
+            autoplayInterval = setInterval(() => showSlide(currentSlide + 1), 5000);
+            isPlaying = true;
+            if (playPauseButton) playPauseButton.innerHTML = '<i class="fa fa-pause"></i>';
+        }
+
+        function stopAutoplay() {
+            if (autoplayInterval) clearInterval(autoplayInterval);
+            autoplayInterval = null;
+            isPlaying = false;
+            if (playPauseButton) playPauseButton.innerHTML = '<i class="fa fa-play"></i>';
+        }
+
+        function changeSlide(step) {
+            showSlide(currentSlide + step);
+            if (isPlaying) { stopAutoplay(); startAutoplay(); }
+        }
+
+        // Initialize this slideshow
+        showSlide(0);
+        stopAutoplay();
+        // startAutoplay();
+
+        // Add event listeners
+        if (prevButton) prevButton.addEventListener('click', () => changeSlide(-1));
+        if (nextButton) nextButton.addEventListener('click', () => changeSlide(1));
+        if (playPauseButton) playPauseButton.addEventListener('click', () => {
+            isPlaying ? stopAutoplay() : startAutoplay();
+        });
+    });
+
+    
+
+    // Handle main video play button
+    const mainVideo = document.querySelector('.main-video');
+    const playButton = document.querySelector('.play-button-overlay');
+    
+    if (mainVideo && playButton) {
+        // Click play button to play video
+        playButton.addEventListener('click', () => {
+            mainVideo.play();
+            mainVideo.classList.add('playing');
+        });
+
+        // Handle video play/pause events
+        mainVideo.addEventListener('play', () => {
+            mainVideo.classList.add('playing');
+        });
+
+        mainVideo.addEventListener('pause', () => {
+            mainVideo.classList.remove('playing');
+        });
+
+        mainVideo.addEventListener('ended', () => {
+            mainVideo.classList.remove('playing');
+        });
+    }
+
+    // -----------------------------
+    // 🖼️ Click-to-zoom Lightbox
+    // -----------------------------
+    // Build overlay once
+    const lightbox = document.createElement('div');
+    lightbox.className = 'lightbox-overlay';
+    lightbox.setAttribute('role', 'dialog');
+    lightbox.setAttribute('aria-modal', 'true');
+    lightbox.innerHTML = '<img alt="Expanded image">';
+    document.body.appendChild(lightbox);
+    const lightboxImg = lightbox.querySelector('img');
+
+    function openLightbox(src, alt) {
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || '';
+        lightbox.classList.add('active');
+        document.body.classList.add('no-scroll');
+    }
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.classList.remove('no-scroll');
+        lightboxImg.src = '';
+    }
+
+    // Close on click anywhere or on Esc
+    lightbox.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+    });
+
+    // Mark target images as zoomable and wire up click
+    const zoomableImages = document.querySelectorAll('.image-container img, .slideshow img, .main-content img.img, .hero-section img.img, .slideshow video');
+    zoomableImages.forEach(img => {
+        img.classList.add('zoomable');
+        img.addEventListener('click', () => {
+            // support optional high-res source via data-fullsrc
+            const src = img.getAttribute('data-fullsrc') || img.currentSrc || img.src;
+            openLightbox(src, img.alt);
+        });
+    });
+});
+    </script>
+</body>
+</html>
