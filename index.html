@@ -244,6 +244,18 @@
 
                     <h2>Teaser</h2>
 
+                    <div class="image-container">
+                        <div class="image-content">
+                        <img src="images/fig_teaser.png" class="img large-image" alt="Framework overview">
+                        </div>
+                        <p class="image-caption">
+                            <strong>Visualization of scene-consistent camera-controllable video generation.</strong><br>
+                            Comparison of different methods for generating videos from the same input 
+                            (<em>shown in Input Video</em>) that follow the camera trajectory shown in the top row 
+                            (<em>Camera</em>). Our method best preserves scene consistency with the input video. 
+                        </p>
+                    </div>
+
                     <!-- 🎥 Teaser 영상 섹션 (Results와 동일한 구조) -->
                     <div class="slideshow-container">
                     <div class="slideshow" data-range="001-009" data-dir="videos" data-ext="mp4"></div>
@@ -263,7 +275,7 @@
                 <img src="images/fig_framework.png" class="img large-image" alt="Framework overview">
                 </div>
                 <p class="image-caption">
-                <strong>Overview of our proposed framework.</strong>
+                <strong>Overview of our proposed framework.</strong><br>
                 Given a static 3D point cloud reconstructed from an input video and an action prompt, our model generates a dynamic video aligned with a user-specified camera trajectory. 
                 The framework jointly leverages 
                 <span style="color:#0070C0;"><strong>temporal</strong></span> conditioning from the last few frames to ensure motion continuity, and 
@@ -324,7 +336,8 @@
                 <img src="images/fig_dynamicmask_pipeline.png" class="img large-image" alt="Dynamic Region Detection Pipeline">
                 </div>
                 <p class="image-caption">
-                <strong>Three-stage dynamic masking pipeline.</strong> Motion detection → Tracking → Propagation.
+                <strong>Three-stage dynamic masking pipeline.</strong><br>
+                 Motion detection → Tracking → Propagation.
                 </p>
             </div>
             <p>
@@ -390,7 +403,7 @@
                     </tbody>
                     </table>
                     <p class="image-caption" style="text-align: center; margin-top: 10px;">
-                    <strong>Evaluation of spatial and geometric consistency.</strong>
+                    <strong>Evaluation of spatial and geometric consistency.</strong><br>
                     We compare DFoT and <strong>3DScenePrompt</strong> on
                     RealEstate10K and DynPose-100K. PSNR, SSIM, and LPIPS evaluate spatial consistency,
                     while MEt3R measures geometric accuracy.
@@ -442,7 +455,7 @@
                     </tbody>
                     </table>
                     <p class="image-caption" style="text-align:center; margin-top:10px;">
-                    <strong>Evaluation of camera controllability.</strong>
+                    <strong>Evaluation of camera controllability.</strong><br>
                     Lower mRotErr, mTransErr, and mCamMC indicate more accurate control over camera pose transitions.
                     </p>
                 </div>
@@ -502,7 +515,7 @@
                     </tbody>
                     </table>
                     <p class="image-caption" style="text-align:center; margin-top:10px;">
-                    <strong>Evaluation of video generation quality.</strong>
+                    <strong>Evaluation of video generation quality.</strong><br>
                     FVD evaluates overall temporal quality (lower is better).  
                     VBench++ metrics measure subject and background consistency, perceptual quality, and temporal smoothness (higher is better).
                     </p>
@@ -559,7 +572,7 @@
                     </table>
 
                     <p class="image-caption" style="text-align:center; margin-top:10px;">
-                    <strong>Ablation study on dynamic masking.</strong>
+                    <strong>Ablation study on dynamic masking.</strong><br>
                     Removing the dynamic mask (<span style="font-family:monospace;">𝓜</span>) leads to degraded PSNR, SSIM,
                     and higher MEt3R, confirming its importance for scene-consistent video generation. Here, <strong>n</strong> denotes the <em>number of retrieved frames</em> used for spatial conditioning.
                     </p>
