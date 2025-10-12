@@ -6,7 +6,23 @@
 This is the official implementation of the paper  
 **"3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation"**
 
-by [Joungbin Lee](https://scholar.google.com/citations?user=0H3dcPoAAAAJ&hl=en),  [Jaewoo Jung](https://crepejung00.github.io), [Jisang Han](https://onground-korea.github.io),  [Takuya Narihira](https://scholar.google.com/citations?user=D3h3NxwAAAAJ&hl=en),  [Kazumi Fukuda](https://ai.sony/people/Kazumi-Fukuda/), [Junyoung Seo](https://j0seo.github.io),  [Sunghwan Hong](https://sunghwanhong.github.io), [Yuki Mitsufuji](https://www.yukimitsufuji.com),  and [Seungryong Kim](https://cvlab.kaist.ac.kr/members/faculty).  
+by [**Joungbin Lee**](https://scholar.google.com/citations?user=0H3dcPoAAAAJ&hl=en)<sup>1\*</sup> · 
+[**Jaewoo Jung**](https://crepejung00.github.io/)<sup>1\*</sup> · 
+[**Jisang Han**](https://onground-korea.github.io/)<sup>1\*</sup> · 
+[**Takuya Narihira**](https://scholar.google.com/citations?user=D3h3NxwAAAAJ&hl=en)<sup>2</sup> · 
+[**Kazumi Fukuda**](https://ai.sony/people/Kazumi-Fukuda/)<sup>2</sup> · 
+[**Junyoung Seo**](https://j0seo.github.io/)<sup>1</sup> · 
+[**Sunghwan Hong**](https://sunghwanhong.github.io/)<sup>3</sup> · 
+[**Yuki Mitsufuji**](https://www.yukimitsufuji.com/)<sup>2,4&dagger;</sup> · 
+[**Seungryong Kim**](https://cvlab.kaist.ac.kr/members/faculty)<sup>1&dagger;</sup>  
+
+<sup>1</sup>KAIST AI&emsp;&emsp;&emsp;&emsp;
+<sup>2</sup>Sony AI&emsp;&emsp;&emsp;&emsp;
+<sup>3</sup>ETH Zürich&emsp;&emsp;&emsp;&emsp;
+<sup>4</sup>Sony Group Corporation 
+
+*: Co-First Author <br>
+&dagger;: Co-Corresponding Author
 
 ---
 
