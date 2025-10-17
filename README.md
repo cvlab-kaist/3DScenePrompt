@@ -1,5 +1,5 @@
 # 3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation
-<a href=""><img src="https://img.shields.io/badge/arXiv-2510.07310-%23B31B1B"></a>
+<a href="https://arxiv.org/abs/2510.14945"><img src="https://img.shields.io/badge/arXiv-2510.14945-%23B31B1B"></a>
 <a href="https://cvlab-kaist.github.io/3DScenePrompt"><img src="https://img.shields.io/badge/Project%20Page-online-brightgreen"></a>  
 <br>
 
@@ -42,5 +42,12 @@ Stay tuned for updates!
 ## Citation
 If you find this research useful, please consider citing:
 ```bibtex
-@misc{
+@misc{lee20253dscenepromptingsceneconsistent,
+      title={3D Scene Prompting for Scene-Consistent Camera-Controllable Video Generation}, 
+      author={JoungBin Lee and Jaewoo Jung and Jisang Han and Takuya Narihira and Kazumi Fukuda and Junyoung Seo and Sunghwan Hong and Yuki Mitsufuji and Seungryong Kim},
+      year={2025},
+      eprint={2510.14945},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2510.14945}, 
 }
