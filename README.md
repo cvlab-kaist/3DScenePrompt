@@ -31,11 +31,26 @@ by [**Joungbin Lee**](https://scholar.google.com/citations?user=0H3dcPoAAAAJ&hl=
 
 **3DScenePrompt** is a framework to generate a **next chunk video** from any **arbitrary-length** in-the-wild input video while allowing precise **camera control** and maintaining **scene-consistency** with the input video.
 
+
+
+## 🚀 ToDo
+- [x] Pretrained weights. <br>
+- [x] Inference code. <br>
+- [ ] CogVideoX training code. <br>
+- [ ] WAN 2.1 training & inference code. <br>
+
 ---
 
-## Code and Models
-The source code and pretrained weights will be released soon.  
-Stay tuned for updates!
+## Installation
+Our code is developed based on pytorch 2.5.1, CUDA 12.1 and python 3.10.
+
+```bash
+conda create -n 3DScenePrompt python=3.10
+conda activate 3DScenePrompt
+
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+pip install -r requirements.txt
+```
 
 ---
 
