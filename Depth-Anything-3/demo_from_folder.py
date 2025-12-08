@@ -85,9 +85,9 @@ def run_inference(args):
         # try: 
             time1 = time.time()
             output_path = os.path.join(out_base_path, scene_name, 'DA3.npz')
-            # if os.path.exists(output_path):
-            #     print(f"skip {output_path}")
-            #     continue
+            if os.path.exists(output_path):
+                print(f"skip {output_path}")
+                continue
             
             images = natsorted(os.listdir(os.path.join(input_base_path, scene_name,'color')))
             images_path = [os.path.join(input_base_path, scene_name,'color',img_name) for img_name in images]
@@ -107,7 +107,7 @@ def run_inference(args):
                    
             time2 = time.time()
             print(f"gpu : {args.batch} time taken : {time2-time1}")
-            breakpoint()
+            
             np.savez_compressed(output_path, **data)
 
 

@@ -32,6 +32,7 @@ from third_party.raft import load_RAFT
 from third_party.sam2.sam2.build_sam import build_sam2_video_predictor
 
 from sam2_utils.track_utils import sample_points_from_masks, sample_points_from_all_dbscan_clusters, sample_points_from_all_dbscan_clusters_w_margin
+from torch.nn import functional as F
 
 def parse_args():
     """Parse command-line arguments."""
@@ -62,6 +63,7 @@ def parse_args():
     parser.add_argument("--inverse", action='store_true', help="inverse order")
     parser.add_argument("--shuffle", action='store_true', help="shuffle order")
     parser.add_argument("--total_batch", type=int, default=9)
+    parser.add_argument("--original_video_path", type=str, default="", help="path to original video for sam2 refinement")
     return parser.parse_args()
 
 
@@ -98,7 +100,7 @@ def get_flow(view1, view2, img, flow_net, sintel_ckpt=False): #TODO: test with g
     return flow_ij, flow_ji
 
 
-def prepare_dataset(file_path, cache_dir):
+def prepare_dataset(file_path, cache_dir=None):
     data = np.load(file_path)
             
     
@@ -113,12 +115,26 @@ def prepare_dataset(file_path, cache_dir):
     camera_intrinsic = torch.from_numpy(camera_intrinsic).float()
     depth = torch.from_numpy(depth).float()
     
-    iijj = np.load(f"{cache_dir}/ii-jj.npy")
+    # iijj = np.load(f"{cache_dir}/ii-jj.npy")        
+    def get_iijj_list(num_frames, steps=[1, 2, 4, 8, 15]):
+        ii = []
+        jj = []
+
+        for step in steps:
+            for i in range(0, num_frames - step):
+                ii.append(i)
+                jj.append(i + step)
+                
+        iijj = np.stack((ii, jj), axis=0).astype(np.int32)
+        return iijj
+    
+    iijj = get_iijj_list(len(images), steps=[1,2,4,8,15])
+    
     iijj = torch.from_numpy(np.ascontiguousarray(iijj)).float()
     ii = iijj[0, ...].long()
     jj = iijj[1, ...].long()
 
-    return images, camera_extrinsic, camera_intrinsic, depth, ii, jj 
+    return images, camera_extrinsic, camera_intrinsic[0], depth, ii, jj 
 
 from sklearn.cluster import DBSCAN
 
@@ -195,11 +211,12 @@ def get_dynamic_mask(depth, edges, view1_tensor, view2_tensor, flow_ij, flow_ji,
 
 
 
-def refine_motion_mask_w_sam2(images, dynamic_masks, predictor):
+def refine_motion_mask_w_sam2(images, dynamic_masks, predictor, original_video_path):
     n_imgs = len(images)
     try:
         frame_tensors = images.to(device)
-        inference_state = predictor.init_state(video_path=frame_tensors/255)
+        # inference_state = predictor.init_state(video_path=frame_tensors/255)
+        inference_state = predictor.init_state(video_path=original_video_path)
         mask_list = [dynamic_masks[i] for i in range(n_imgs)]
         
         ann_obj_id = 1
@@ -230,16 +247,13 @@ def refine_motion_mask_w_sam2(images, dynamic_masks, predictor):
         tracks_chunks = []
         vis_chunks    = []
 
-        # N개의 쿼리를 batch_size 단위로 처리
         for i in range(0, queries.shape[0], batch_size):
             q_chunk = queries[i : i + batch_size]       # shape: [bs, ...]
-            # cotracker에선 항상 (B, T, N_chunk, ...) 형태로 나오므로
             pt, pv = cotracker(images[None].to(device), queries=q_chunk[None])
             # pt: [1, T, N_chunk, 2], pv: [1, T, N_chunk, 1]
             tracks_chunks.append(pt)
             vis_chunks.append(pv)
 
-        # N축(dim=2)으로 합쳐서 원래 N개 쿼리 순서대로 복원
         pred_tracks     = torch.cat(tracks_chunks, dim=2)  # -> [1, T, N, 2]
         pred_visibility = torch.cat(vis_chunks,    dim=2)  # -> [1, T, N, 1]
         # vis = Visualizer(save_dir="./saved_videos", pad_value=120, linewidth=3)
@@ -249,14 +263,7 @@ def refine_motion_mask_w_sam2(images, dynamic_masks, predictor):
         clusters = pred_tracks[0, 0]        # (459, 2)
         clusters = clusters.view(-1, 3, 2) # (153, 3, 2), 459/3 = 153
 
-        try:
-            # threshold = 10.0  # 픽셀 단위로 너무 가까우면 겹친다고 판단
-            # good = []
-            # for c in clusters:
-            #     if min_pairwise_dist(c) > threshold:
-            #         good.append(c)
-            # filtered = torch.stack(good, dim=0)  # (N_filtered, 3, 2)
-            
+        try:     
             filtered = cluster_and_select(
                 clusters,
                 eps=5.0,
@@ -274,11 +281,9 @@ def refine_motion_mask_w_sam2(images, dynamic_masks, predictor):
         else:
             subsampled = filtered
         
-        sampled_point_vis(frame_tensors, clusters, image_name = 'clusters.png')
-        sampled_point_vis(frame_tensors, filtered, image_name = 'filtered.png')
-        sampled_point_vis(frame_tensors, subsampled, image_name = 'subsampled.png')
-            
-        # breakpoint()
+        # sampled_point_vis(frame_tensors, clusters, image_name = 'clusters.png')
+        # sampled_point_vis(frame_tensors, filtered, image_name = 'filtered.png')
+        # sampled_point_vis(frame_tensors, subsampled, image_name = 'subsampled.png')
         
         autocast_dtype = torch.bfloat16 if device == 'cuda' else torch.float32
         with torch.autocast(device_type=device, dtype=autocast_dtype):
@@ -291,27 +296,6 @@ def refine_motion_mask_w_sam2(images, dynamic_masks, predictor):
                     points=points,
                     labels=labels,
                 )
-                
-            # for i in range(0, len(frame_tensors), 5):
-            #     for object_id, (label, points) in enumerate(zip(clustered_points[i], clustered_points[i]), start=1):
-            #         labels = np.ones((points.shape[0]), dtype=np.int32)
-            #         _, out_obj_ids, out_mask_logits = predictor.add_new_points_or_box(
-            #             inference_state=inference_state,
-            #             frame_idx=i,
-            #             obj_id=object_id,
-            #             points=points,
-            #             labels=labels,
-            #         )
-                
-            # for object_id, (label, points) in enumerate(zip(all_sample_points[0:1], all_sample_points[0:1]), start=1):
-            #     labels = np.ones((points.shape[0]), dtype=np.int32)
-            #     _, out_obj_ids, out_mask_logits = predictor.add_new_points_or_box(
-            #         inference_state=inference_state,
-            #         frame_idx=0,
-            #         obj_id=object_id,
-            #         points=points,
-            #         labels=labels,
-            #     )
             
                 
             video_segments = {}  # video_segments contains the per-frame segmentation results
@@ -332,31 +316,9 @@ def refine_motion_mask_w_sam2(images, dynamic_masks, predictor):
             
             sam_refined = torch.from_numpy(total_mask).cpu().unsqueeze(1).repeat(1,3,1,1)
             original_mask = torch.stack(mask_list).float().cpu().unsqueeze(1).repeat(1,3,1,1)
+            original_mask = F.interpolate(original_mask, size=sam_refined.shape[2:], mode='nearest')
             union_mask = torch.logical_or(sam_refined, original_mask)
-            
-            
-            # output_path = './test'
-            # os.makedirs(output_path, exist_ok=True)
-            # for i in range(total_mask.shape[0]):
-            #     mask = total_mask[i]
-            #     mask = (mask * 255).astype(np.uint8)
-            #     cv2.imwrite(os.path.join(output_path, f"{i:06d}.png"), mask)
-
-            # save_videos = torch.cat([frame_tensors.cpu()/255, sam_refined, original_mask, union_mask], dim=3)
-            # save_videos = save_videos.permute(0, 2, 3, 1).cpu().numpy()
-            # save_videos = (save_videos * 255).astype(np.uint8)
-            # iio.mimwrite(os.path.join(output_path, f"video.mp4"), save_videos, fps=30)
-            
-            # # vis points
-            # for i in range(len(frame_tensors)):
-            #     img = frame_tensors[i].cpu().numpy().transpose(1, 2, 0)[:,:,::-1]
-            #     img = (img).astype(np.uint8)
-            #     for points in clustered_points[i]:
-            #         for point in points:
-            #             cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 255, 0), -1)
-            #     cv2.imwrite(os.path.join(output_path, f"points_{i:06d}.png"), img)
-            # breakpoint()
-            
+          
     finally:
         # Restore previous TF32 settings
         if device == 'cuda':
@@ -428,18 +390,18 @@ if __name__ == "__main__":
         
 
     for _, scene_name in enumerate(folder_names):   
-        try:
+        # try:
             time1 = time.time()
             print(f'gpu : {args.batch} percentage : {_}/{len(folder_names)}')
             print(f"gpu : {args.batch} output_dir : {out_base_path}/{scene_name}/dynamic_mask")
             if os.path.exists(f"{out_base_path}/{scene_name}/dynamic_mask"):
                 print(f"already processed {scene_name}")
                 continue
-            folder_path = os.path.join(input_base_path, scene_name, 'megasam_refine', f'{scene_name}_sgd_cvd_hr.npz')
-            cache_dir = os.path.join(input_base_path, scene_name, 'cache_flow')
+            folder_path = os.path.join(input_base_path, scene_name, 'DA3.npz')
             output_path = os.path.join(out_base_path, scene_name, 'dynamic_mask')
+            original_video_path = os.path.join(args.original_video_path, scene_name + '.mp4')
             
-            images, camera_extrinsic, camera_intrinsic, depth, ii, jj  = prepare_dataset(folder_path, cache_dir)
+            images, camera_extrinsic, camera_intrinsic, depth, ii, jj  = prepare_dataset(folder_path)
             
             view1_tensor = ii
             view2_tensor = jj
@@ -465,11 +427,11 @@ if __name__ == "__main__":
             del depth
             del importance_ij, importance_ji
             ############### refine with sam2 ##################
-            dynamic_masks = refine_motion_mask_w_sam2(images, dynamic_masks, predictor)
+            dynamic_masks = refine_motion_mask_w_sam2(images, dynamic_masks, predictor, original_video_path)
             
             os.makedirs(output_path, exist_ok=True)
             for i in range(len(dynamic_masks)):
                 save_image(dynamic_masks[i].cpu().float(), f"{output_path}/{i:06d}.png")
             print(f"gpu : {args.batch} time : {time.time()-time1}")
-        except:
-            pass
+        # except:
+        #     pass

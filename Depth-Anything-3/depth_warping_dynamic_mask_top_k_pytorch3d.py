@@ -49,6 +49,8 @@ from pytorch3d.structures import Pointclouds
 from typing import Tuple
 from pytorch3d.renderer import compositing, OrthographicCameras
 import torch.nn.functional as F
+import imageio
+
 
 
 def parse_args():
@@ -85,14 +87,14 @@ def parse_args():
     return parser.parse_args()
 
 
-def prepare_dataset(file_path, dynamic_mask_dir, device, max_frames=10000):
+def prepare_dataset(file_path, dynamic_mask_dir, device):
     data = np.load(file_path)
     
     # clip max frames            
-    images = data['images'][:max_frames]
-    depth = data['depths'][:max_frames]
-    camera_c2w = data['cam_c2w'][:max_frames]
-    camera_intrinsic = data['intrinsic'][:max_frames]
+    images = data['images']
+    depth = data['depths']
+    camera_c2w = data['cam_c2w']
+    camera_intrinsic = data['intrinsic']
 
     images = torch.from_numpy(images).permute(0, 3, 1, 2).float()
     camera_c2w = torch.from_numpy(camera_c2w).float()
@@ -177,7 +179,7 @@ def make_projection_matrix(intrinsic_matrix, img_width, img_height, device):
 
     return P
 
-def rasterize_points_func(pts3D: Pointclouds, image_size: Tuple[int, int], radius: float, points_per_pixel: int=200000, **kwargs):
+def rasterize_points_func(pts3D: Pointclouds, image_size: Tuple[int, int], radius: float, **kwargs):
 
     cameras = OrthographicCameras(device='cuda')
 
@@ -187,26 +189,38 @@ def rasterize_points_func(pts3D: Pointclouds, image_size: Tuple[int, int], radiu
         points_per_pixel=5,
     )
     
-    # 3. Rasterizer + Renderer (AlphaCompositor 포함)
-    # 수동 compositing 대신 PyTorch3D 내장 기능 사용이 훨씬 빠르고 정확합니다.
+    # 3. Rasterizer + Renderer (AlphaCompositor)
     rasterizer = PointsRasterizer(cameras=cameras, raster_settings=raster_settings)
     renderer = PointsRenderer(rasterizer=rasterizer, compositor=AlphaCompositor())
     
-    # 4. 렌더링 (B, H, W, 4) -> (B, C, H, W)
-    # pts3D 좌표는 이미 NDC라고 가정합니다.
+    # 4. rendering (B, H, W, 4) -> (B, C, H, W)
     rendered_images = renderer(pts3D)
     output = rendered_images.permute(0, 3, 1, 2)
     
-    # (B, H, W, C) -> (B, C, H, W)
+    # # (B, H, W, C) -> (B, C, H, W)
     output = F.interpolate(
             output, 
             size=image_size, # (H, W)
             mode='bilinear', 
             align_corners=False
         )
+    
+    fragments = rasterizer(pts3D)  # (B, H_r, W_r, K)
+    visible_mask = (fragments.idx[..., 0] >= 0)  # (B, H_r, W_r), bool
+    
+    visible_mask = visible_mask.unsqueeze(1).float()  # (B, 1, H_r, W_r)
+    visible_mask = F.interpolate(
+        visible_mask,
+        size=image_size,
+        mode="nearest",
+    )  # (B, 1, H, W)
 
     
-    return output
+    visible_ratio = visible_mask.mean(dim=(2, 3))  # (B, 1)
+    
+    visible_ratio = visible_ratio.squeeze(1)
+
+    return output, visible_ratio
 
    
 def run_inference(args):
@@ -235,20 +249,15 @@ def run_inference(args):
     for _, scene_name in enumerate(folder_names):  
         # try: 
             time1 = time.time()
-            if args.top_k!= 6:
-                output_path = os.path.join(out_base_path, scene_name, f'depth_warped_top{args.top_k}_da3')
-                output_mask_path = os.path.join(out_base_path, scene_name, f'depth_warped_mask_top{args.top_k}_da3')
-            else:
-                output_path = os.path.join(out_base_path, scene_name, 'depth_warped')
-                output_mask_path = os.path.join(out_base_path, scene_name, 'depth_warped_mask')
-            
+            output_path = os.path.join(out_base_path, f'{scene_name}.mp4')
+                
             print(f'gpu : {args.batch} percentage : {_}/{len(folder_names)}')
             print(f"gpu : {args.batch} output_dir : {output_path}")
             
             folder_path = os.path.join(input_base_path, scene_name, 'DA3.npz')
-            dynamic_mask_dir = os.path.join(input_base_path, scene_name, 'dynamic_mask_da3')
+            dynamic_mask_dir = os.path.join(input_base_path, scene_name, 'dynamic_mask')
             images, camera_c2w, camera_intrinsic, depth, dynamic_mask = prepare_dataset(folder_path, dynamic_mask_dir, device)
-            P = make_projection_matrix(camera_intrinsic, images.shape[2], images.shape[3], device)
+            # P = make_projection_matrix(camera_intrinsic, images.shape[2], images.shape[3], device)
             
             B, _, W, H = images.shape
             normal_generator = NormalGenerator(images.shape[-2], images.shape[-1])
@@ -256,10 +265,12 @@ def run_inference(args):
             K_inv = torch.linalg.inv(camera_intrinsic)
             normal = normal_generator(depth.unsqueeze(dim=1), K_inv[None])
             
-            frame_start, frame_end = 60, 100
-            num_other_frames = len(images) - 49
+            # frame_start, frame_end = 60, 100
+            frame_start, frame_end = len(images) - 40, len(images)
+            warped_img = []
             for i in range(frame_start, frame_end):
-                depth1 = depth[:frame_start]
+                depth1 = depth[:frame_start] # (B, H, W)
+                dynamic_mask1 = dynamic_mask[:frame_start] # (B, 1, H, W)
                 B, H, W = depth1.shape
                 intrinsic_matrix1 = camera_intrinsic.unsqueeze(0).repeat(B, 1, 1)
                 intrinsic_matrix2 = camera_intrinsic.unsqueeze(0).repeat(B, 1, 1)
@@ -283,24 +294,64 @@ def run_inference(args):
                 x_ndc = -(projected_2d[:,0,:] / W) * 2 + 1
                 y_ndc = -(projected_2d[:,1,:] / H) * 2 + 1
                 z_ndc = (projected_2d_hom[:,2,:] - near) / (far - near)
-                
+
                 ndc_points = torch.stack([x_ndc, y_ndc, z_ndc], dim=-1)
-                pts3Ds = [Pointclouds(points=ndc_points[i:i+1], features=images[i:i+1].permute(0,2,3,1).reshape(1, -1, 3)/255) for i in range(B)]
+                pts3Ds = []
+                transposed_normal = transformation_matrix[:,:3,:3] @ normal[:frame_start].reshape(B, 3, -1)
+                
+                ndcs = []
+                features = []
+                for idx in range(B):
+                    ndc_point_ = ndc_points[idx:idx+1]
+                    feature_ = images[:frame_start][idx:idx+1].permute(0,2,3,1).reshape(1, -1, 3)/255
+                    dynamic_mask_ = dynamic_mask1[idx:idx+1].reshape(-1)
+                    total_mask = (transposed_normal[idx,2] > 0) & (dynamic_mask_.bool()) & (ndc_point_[0,:,2] > 0) & (ndc_point_[0,:,2] < 1)
+                    
+                    masked_ndc = ndc_point_[:, total_mask, :]
+                    masked_feature = feature_[:, total_mask, :]
+                    pts3D = Pointclouds(points=masked_ndc, features=masked_feature)
+                    pts3Ds.append(pts3D)
+                    ndcs.append(masked_ndc.squeeze(0))
+                    features.append(masked_feature.squeeze(0))
                 radius = 1.0 / H * 2.0, 
-                imgs = [rasterize_points_func(pts3Ds[i], (H,W), radius, 200000) for i in range(B)]
-                imgs = torch.cat(imgs, dim=0)
                 
-                from torchvision.utils import save_image
-                save_image(imgs, "transformed_src_alphas.png")
-                save_image(imgs[-1], "transformed_src_alpha.png")
-                breakpoint()
                 
+                img_list = []
+                visible_ratio_list = []
+                for idx in range(B):
+                    img, visible_ratio = rasterize_points_func(pts3Ds[idx], (H,W), radius)
+                    img_list.append(img)
+                    visible_ratio_list.append(visible_ratio)
                     
-            del view2_tensor, view1_tensor, flow_ij, importance_ij, top_k_indices, top_k_depth, 
-                    
+                visible_ratio = torch.cat(visible_ratio_list, dim=0)
+                idx_sorted = torch.argsort(visible_ratio, descending=True)
+                top_k_indices = idx_sorted[:args.top_k].tolist()
+                
+                top_k_points = [ndcs[i] for i in top_k_indices]
+                top_k_colors = [features[i] for i in top_k_indices]
+                top_k_points = torch.cat(top_k_points, dim=0)
+                top_k_colors = torch.cat(top_k_colors, dim=0)
+                
+                pts3D = Pointclouds(points=top_k_points.unsqueeze(0), features=top_k_colors.unsqueeze(0))
+                imgs, _ = rasterize_points_func(pts3D, (H,W), radius)
+                warped_img.append(imgs)
+                
+            # del view2_tensor, view1_tensor, flow_ij, importance_ij, top_k_indices, top_k_depth, 
             time2 = time.time()
             print(f"gpu : {args.batch} time taken : {time2-time1}")
-
+            warped_img = torch.cat(warped_img, dim=0) * 255
+            cond_video = torch.cat([images[frame_start-9:frame_start], warped_img], dim=0)
+            resized = F.interpolate(
+                cond_video, 
+                size=(480, 720),   # (H, W)
+                mode="bilinear",
+                align_corners=False
+            )   
+            frames = resized.permute(0, 2, 3, 1).cpu().numpy().astype(np.uint8)
+            writer = imageio.get_writer(output_path, fps=16, codec='libx264')
+            for f in frames:
+                writer.append_data(f)
+            writer.close()
 
 def main():
     args = parse_args()

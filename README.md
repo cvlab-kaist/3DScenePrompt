@@ -38,6 +38,8 @@ by [**Joungbin Lee**](https://scholar.google.com/citations?user=0H3dcPoAAAAJ&hl=
 - [x] Inference code. <br>
 - [ ] CogVideoX training code. <br>
 - [ ] WAN 2.1 training & inference code. <br>
+- [ ] Evaluation code <br>
+- [ ] Visualization code <br>
 
 ---
 
@@ -45,12 +47,69 @@ by [**Joungbin Lee**](https://scholar.google.com/citations?user=0H3dcPoAAAAJ&hl=
 Our code is developed based on pytorch 2.5.1, CUDA 12.1 and python 3.10.
 
 ```bash
+git clone --recursive https://github.com/cvlab-kaist/3DScenePrompt.git
+cd 3DScenePrompt
+
 conda create -n 3DScenePrompt python=3.10
 conda activate 3DScenePrompt
 
-pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 xformers --index-url https://download.pytorch.org/whl/cu121
+pip install --extra-index-url https://miropsota.github.io/torch_packages_builder pytorch3d==0.7.8+pt2.5.1cu121
+
+cd Depth-Anything-3
+pip install -e . 
+
+cd third_party/sam2
+pip install -e .
+cd ../../../
+
 pip install -r requirements.txt
 ```
+
+## Running Demo
+
+### Data Preprocessing
+This project provides a preprocessing pipeline that converts input videos into depth maps, normal maps, conditioning videos, and additional metadata required for training and inference.
+Run the following script to generate the dataset:
+
+```bash
+cd Depth-Anything-3
+bash data_preprocesisng.sh
+cd ../
+```
+
+After running the preprocessing script, the dataset will be structured as follows:
+
+```
+dataset
+├── images
+│   ├── {scene_name}
+│   │   ├── color
+│   │   │   ├── 000000.jpg
+│   │   │   ├── 000001.jpg
+│   │   │   ├── ...
+│   │   │   ├── 000100.jpg
+│   │   │
+│   │   └── DA3.npz              # Depth-Anything-3 depth + normal + confidence
+│   │
+│   └── ...
+│
+├── cond_video
+│   ├── {scene_name}.mp4         # conditioning video
+│   └── ...
+│
+├── captions.txt                 # caption per scene
+├── cond_video.txt               # path list of cond videos
+├── continuous_video.txt         # continuous reconstructed video paths
+```
+
+### Inference
+
+```bash
+cd Spatio-CogVideo/inference
+bash data_preprocessing.sh
+```
+
 
 ---
 
