@@ -1,10 +1,3 @@
-import os
-PATH = '/mnt/cache'
-os.environ['TRANSFORMERS_CACHE'] = PATH
-os.environ['HF_HOME'] = PATH
-os.environ['HF_DATASETS_CACHE'] = PATH
-os.environ['TORCH_HOME'] = PATH
-
 import sys
 from pathlib import Path
 import torch

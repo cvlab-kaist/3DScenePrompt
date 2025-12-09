@@ -33,3 +33,4 @@ pydantic>=2.10.3
 natsort
 wandb
 kornia
+peft>=0.17.0

@@ -64,6 +64,10 @@ pip install -e .
 cd ../../../
 
 pip install -r requirements.txt
+
+
+# SEA-raft, Sam2 model weight download
+bash download_weight.sh
 ```
 
 ## Running Demo

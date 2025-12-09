@@ -20,13 +20,6 @@ Additional options are available to specify the model path, guidance scale, numb
 
 """
 
-import os
-PATH = '/mnt/cache'
-os.environ['TRANSFORMERS_CACHE'] = PATH
-os.environ['HF_HOME'] = PATH
-os.environ['HF_DATASETS_CACHE'] = PATH
-os.environ['TORCH_HOME'] = PATH
-
 import argparse
 import logging
 from typing import Literal, Optional
