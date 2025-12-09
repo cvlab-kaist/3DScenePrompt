@@ -1,7 +1,3 @@
-#!/usr/bin/env bash
-unset PYTHONPATH
-export PYTHONNOUSERSITE=1  
-
 # Prevent tokenizer parallelism issues
 export TOKENIZERS_PARALLELISM=false
 export WANDB_API_KEY=''

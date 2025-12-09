@@ -36,6 +36,7 @@ import sys
 sys.path.append("../")
 import cv2
 
+import os
 from finetune.models.pipelines.pipeline import CogVideoXVideoToVideoPipeline
 from finetune.my_datasets.utils import (
     load_images,

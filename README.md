@@ -114,11 +114,31 @@ dataset
 
 ### Inference
 
+To run inference with our pretrained model:
+
 ```bash
 cd Spatio-CogVideo/inference
 bash inference.sh
+
 ```
 
+This script performs video generation using the provided configuration and checkpoints.
+
+---
+
+### Training
+
+To fine-tune the model on OpenVid or RealEstate10K:
+
+```bash
+cd Spatio-CogVideo/finetune
+bash train_sft_v2v_openvid_re10k.sh
+
+```
+
+The training script includes dataset loading, optimization setup, and checkpoint saving.
+
+Modify the script as needed to adjust hyperparameters or dataset paths.
 
 ---
 
@@ -134,3 +154,18 @@ If you find this research useful, please consider citing:
       primaryClass={cs.CV},
       url={https://arxiv.org/abs/2510.14945}, 
 }
+```
+
+---
+## **Acknowledgements**
+
+Our work builds upon several excellent open-source projects. We gratefully acknowledge the following repositories:
+
+- [**CogVideoX**](https://github.com/THUDM/CogVideo)
+- [**MonST3R**](https://github.com/Junyi42/monst3r)
+- [**MegaSAM**](https://github.com/mega-sam/mega-sam)
+- [**Depth-Anything 3**](https://github.com/ByteDance-Seed/Depth-Anything-3)
+- [**CoTracker v3**](https://github.com/facebookresearch/co-tracker)
+- [**SAM 2**](https://github.com/facebookresearch/sam2)
+
+We sincerely thank the authors and contributors of these projects for making their code publicly available.
