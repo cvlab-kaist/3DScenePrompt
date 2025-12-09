@@ -164,7 +164,7 @@ def generate_video(
                 generator=torch.Generator().manual_seed(seed),  # Set the seed for reproducibility
                 zeropad=zero_pad,
             ).frames[0]
-            
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
             export_to_video(video_generate, output_path, fps=fps)
                 
         except:pass
