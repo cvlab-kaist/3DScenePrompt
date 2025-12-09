@@ -1,10 +1,3 @@
-import os
-PATH = '/mnt/cache' # in the case of singularity setup
-os.environ['TRANSFORMERS_CACHE'] = PATH
-os.environ['HF_HOME'] = PATH
-os.environ['HF_DATASETS_CACHE'] = PATH
-os.environ['TORCH_HOME'] = PATH
-
 #!/usr/bin/env python3
 """
 3D Point Cloud Inference and Visualization Script

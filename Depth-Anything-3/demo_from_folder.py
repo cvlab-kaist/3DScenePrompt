@@ -1,11 +1,3 @@
-import os
-PATH = '/mnt/cache' # in the case of singularity setup
-os.environ['TRANSFORMERS_CACHE'] = PATH
-os.environ['HF_HOME'] = PATH
-os.environ['HF_DATASETS_CACHE'] = PATH
-os.environ['TORCH_HOME'] = PATH
-
-
 import glob, os, torch
 from depth_anything_3.api import DepthAnything3
 import numpy as np

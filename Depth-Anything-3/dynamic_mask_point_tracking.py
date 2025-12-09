@@ -361,7 +361,7 @@ if __name__ == "__main__":
         print("CUDA not available. Switching to CPU.")
         device = "cpu"
 
-    raft_checkpoint = "/mnt/cache/RAFT/Tartan-C-T-TSKH-spring540x960-M.pth" if os.path.exists("/mnt/cache/RAFT/Tartan-C-T-TSKH-spring540x960-M.pth") else 'third_party/RAFT/models/Tartan-C-T-TSKH-spring540x960-M.pth'
+    raft_checkpoint = 'third_party/RAFT/models/Tartan-C-T-TSKH-spring540x960-M.pth'
     flow_net = load_RAFT(raft_checkpoint)
     flow_net = flow_net.to(device)
     flow_net.eval()
@@ -382,7 +382,7 @@ if __name__ == "__main__":
         if torch.cuda.get_device_properties(0).major >= 8:
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
-    sam2_checkpoint = '/mnt/cache/sam2/sam2.1_hiera_large.pt' if os.path.exists('/mnt/cache/sam2/sam2.1_hiera_large.pt') else "third_party/sam2/checkpoints/sam2.1_hiera_large.pt"
+    sam2_checkpoint = "third_party/sam2/checkpoints/sam2.1_hiera_large.pt"
     model_cfg = "configs/sam2.1/sam2.1_hiera_l.yaml"
     predictor = build_sam2_video_predictor(model_cfg, sam2_checkpoint, device=device)
     cotracker = torch.hub.load("facebookresearch/co-tracker", "cotracker3_offline").to(device)
