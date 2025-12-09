@@ -63,7 +63,6 @@ def parse_args():
     parser.add_argument("--inverse", action='store_true', help="inverse order")
     parser.add_argument("--shuffle", action='store_true', help="shuffle order")
     parser.add_argument("--total_batch", type=int, default=9)
-    parser.add_argument("--original_video_path", type=str, default="", help="path to original video for sam2 refinement")
     return parser.parse_args()
 
 
@@ -211,26 +210,26 @@ def get_dynamic_mask(depth, edges, view1_tensor, view2_tensor, flow_ij, flow_ji,
 
 
 
-def refine_motion_mask_w_sam2(images, dynamic_masks, predictor, original_video_path):
+def refine_motion_mask_w_sam2(images, dynamic_masks, predictor):
     n_imgs = len(images)
     try:
         frame_tensors = images.to(device)
         # inference_state = predictor.init_state(video_path=frame_tensors/255)
-        inference_state = predictor.init_state(video_path=original_video_path)
+        import imageio
+        imageio.mimwrite('original_video.mp4', (frame_tensors.cpu().numpy().transpose(0,2,3,1)).astype(np.uint8), fps=16, macro_block_size=4)
+        inference_state = predictor.init_state(video_path='original_video.mp4')
         mask_list = [dynamic_masks[i] for i in range(n_imgs)]
         
-        ann_obj_id = 1
-        sam2_dynamic_masks = [[] for _ in range(n_imgs)]
-
         # Process even frames
         # predictor.reset_state(inference_state)
         masks = torch.stack(mask_list)
         masks = masks.cpu().float().numpy()
         # all_sample_points = sample_points_from_masks(masks=masks, num_points=5)
         
-        clustered_points, clustered_labels = sample_points_from_all_dbscan_clusters_w_margin(masks, num_points_per_cluster=3, margin=10)
-        if clustered_points[0].shape[0] == 0:
-            clustered_points, clustered_labels = sample_points_from_all_dbscan_clusters(masks, num_points_per_cluster=3)
+        clustered_points, clustered_labels = sample_points_from_all_dbscan_clusters_w_margin(masks, num_points_per_cluster=3, margin=20)
+        # if clustered_points[0].shape[0] == 0:
+        #     breakpoint()
+        #     clustered_points, clustered_labels = sample_points_from_all_dbscan_clusters(masks, num_points_per_cluster=3)
         
         queries = torch.cat([
             torch.cat([
@@ -239,7 +238,11 @@ def refine_motion_mask_w_sam2(images, dynamic_masks, predictor, original_video_p
             ], dim=1)
             for i, cluster in enumerate(clustered_points)
         ], dim=0)
-
+        
+        # if no query points, return original masks
+        if queries.shape[0] == 0:
+            return torch.stack(mask_list).float().cpu().unsqueeze(1).repeat(1,3,1,1)
+        
         # from cotracker.utils.visualizer import Visualizer
         queries = queries.cuda()
         batch_size = 512
@@ -273,7 +276,7 @@ def refine_motion_mask_w_sam2(images, dynamic_masks, predictor, original_video_p
         except:
             filtered = clusters
         
-        k = 50
+        k = 30
         N = filtered.shape[0]
         if N > k:
             idx = torch.randperm(N, device=filtered.device)[:k]
@@ -316,7 +319,8 @@ def refine_motion_mask_w_sam2(images, dynamic_masks, predictor, original_video_p
             
             sam_refined = torch.from_numpy(total_mask).cpu().unsqueeze(1).repeat(1,3,1,1)
             original_mask = torch.stack(mask_list).float().cpu().unsqueeze(1).repeat(1,3,1,1)
-            original_mask = F.interpolate(original_mask, size=sam_refined.shape[2:], mode='nearest')
+            # original_mask = F.interpolate(original_mask, size=sam_refined.shape[2:], mode='nearest')
+            sam_refined = F.interpolate(sam_refined.float(), size=original_mask.shape[2:], mode='nearest') 
             union_mask = torch.logical_or(sam_refined, original_mask)
           
     finally:
@@ -399,7 +403,6 @@ if __name__ == "__main__":
                 continue
             folder_path = os.path.join(input_base_path, scene_name, 'DA3.npz')
             output_path = os.path.join(out_base_path, scene_name, 'dynamic_mask')
-            original_video_path = os.path.join(args.original_video_path, scene_name + '.mp4')
             
             images, camera_extrinsic, camera_intrinsic, depth, ii, jj  = prepare_dataset(folder_path)
             
@@ -427,7 +430,7 @@ if __name__ == "__main__":
             del depth
             del importance_ij, importance_ji
             ############### refine with sam2 ##################
-            dynamic_masks = refine_motion_mask_w_sam2(images, dynamic_masks, predictor, original_video_path)
+            dynamic_masks = refine_motion_mask_w_sam2(images, dynamic_masks, predictor)
             
             os.makedirs(output_path, exist_ok=True)
             for i in range(len(dynamic_masks)):

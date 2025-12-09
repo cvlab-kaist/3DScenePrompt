@@ -5,6 +5,9 @@ DATA_DIR=../dataset
 BATCH=-1
 TOTAL_BATCH=5
 
+python ./vid2img.py \
+  --video_path $DATA_DIR/original_video \
+  --outdir $DATA_DIR/images
 
 python ./demo_from_folder.py \
   --base_path $DATA_DIR/images \
@@ -14,7 +17,6 @@ python ./demo_from_folder.py \
 
 python ./dynamic_mask_point_tracking.py \
   --base_path $DATA_DIR/images \
-  --original_video_path $DATA_DIR/original_video \
   --outdir $DATA_DIR/images \
   --batch $(($BATCH)) \
   --total_batch $TOTAL_BATCH  

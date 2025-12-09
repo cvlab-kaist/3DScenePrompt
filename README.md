@@ -85,12 +85,17 @@ dataset
 ├── images
 │   ├── {scene_name}
 │   │   ├── color
-│   │   │   ├── 000000.jpg
-│   │   │   ├── 000001.jpg
+│   │   │   ├── 000000.png
+│   │   │   ├── 000001.png
 │   │   │   ├── ...
-│   │   │   ├── 000100.jpg
+│   │   │   ├── 000100.png
+│   │   ├── dynamic_mask
+│   │   │   ├── 000000.png
+│   │   │   ├── 000001.png
+│   │   │   ├── ...
+│   │   │   ├── 000100.png
 │   │   │
-│   │   └── DA3.npz              # Depth-Anything-3 depth + normal + confidence
+│   │   └── DA3.npz              # Depth-Anything-3 depth + camera extrinsic, intrinsic
 │   │
 │   └── ...
 │
@@ -100,14 +105,14 @@ dataset
 │
 ├── captions.txt                 # caption per scene
 ├── cond_video.txt               # path list of cond videos
-├── continuous_video.txt         # continuous reconstructed video paths
+├── video.txt                    # (optional) path list of videos for training
 ```
 
 ### Inference
 
 ```bash
 cd Spatio-CogVideo/inference
-bash data_preprocessing.sh
+bash inference.sh
 ```
 
 

@@ -1,0 +1,52 @@
+compute_environment: LOCAL_MACHINE
+
+# gpu_ids: "0,1,2,3,4,5,6,7"
+# num_processes: 8  # should be the same as the number of GPUs
+gpu_ids: "0"
+num_processes: 1  # should be the same as the number of GPUs
+
+debug: false
+deepspeed_config:
+  deepspeed_config_file: ./configs/zero2.yaml  # e.g. configs/zero2.yaml, need use absolute path
+  zero3_init_flag: false
+distributed_type: No
+downcast_bf16: 'yes'
+enable_cpu_affinity: false
+machine_rank: 0
+main_training_function: main
+num_machines: 1
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false
+
+# # for data preprocessing
+# compute_environment: LOCAL_MACHINE
+
+# # 1 GPU only, GPU selection comes from CUDA_VISIBLE_DEVICES
+# num_processes: 1
+# num_machines: 1
+
+# # MUST be NO (not Multi-GPU, not DeepSpeed)
+# distributed_type: NO
+
+# # DO NOT specify gpu_ids here, let the shell's CUDA_VISIBLE_DEVICES control GPU assignment
+# # gpu_ids: "0"
+
+# mixed_precision: bf16
+# use_cpu: false
+
+# # optional
+# debug: false
+# downcast_bf16: 'yes'
+# enable_cpu_affinity: false
+
+# main_training_function: main
+# machine_rank: 0
+# rdzv_backend: static
+# same_network: true
+# tpu_env: []
+# tpu_use_cluster: false
+# tpu_use_sudo: false

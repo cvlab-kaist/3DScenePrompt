@@ -186,7 +186,7 @@ def rasterize_points_func(pts3D: Pointclouds, image_size: Tuple[int, int], radiu
     raster_settings = PointsRasterizationSettings(
         image_size=(image_size[0],image_size[0]),
         radius=radius[0],
-        points_per_pixel=5,
+        points_per_pixel=7,
     )
     
     # 3. Rasterizer + Renderer (AlphaCompositor)
@@ -305,7 +305,7 @@ def run_inference(args):
                     ndc_point_ = ndc_points[idx:idx+1]
                     feature_ = images[:frame_start][idx:idx+1].permute(0,2,3,1).reshape(1, -1, 3)/255
                     dynamic_mask_ = dynamic_mask1[idx:idx+1].reshape(-1)
-                    total_mask = (transposed_normal[idx,2] > 0) & (dynamic_mask_.bool()) & (ndc_point_[0,:,2] > 0) & (ndc_point_[0,:,2] < 1)
+                    total_mask = (transposed_normal[idx,2] > 0) & (dynamic_mask_.bool()==False) & (ndc_point_[0,:,2] > 0) & (ndc_point_[0,:,2] < 1)
                     
                     masked_ndc = ndc_point_[:, total_mask, :]
                     masked_feature = feature_[:, total_mask, :]
@@ -348,6 +348,7 @@ def run_inference(args):
                 align_corners=False
             )   
             frames = resized.permute(0, 2, 3, 1).cpu().numpy().astype(np.uint8)
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
             writer = imageio.get_writer(output_path, fps=16, codec='libx264')
             for f in frames:
                 writer.append_data(f)

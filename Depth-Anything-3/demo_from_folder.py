@@ -70,7 +70,7 @@ def run_inference(args):
     input_base_path = args.base_path
     from natsort import natsorted
     folder_names = [d for d in os.listdir(input_base_path) if os.path.isdir(os.path.join(input_base_path, d))]
-    folder_names = natsorted(folder_names)[:1000]
+    folder_names = natsorted(folder_names)
     
     if args.batch!=  -1:
         data_len = len(folder_names)

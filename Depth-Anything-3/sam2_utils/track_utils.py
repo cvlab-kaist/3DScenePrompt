@@ -186,7 +186,6 @@ def sample_points_from_all_dbscan_clusters_w_margin(
         # 1) Shrink the mask by margin pixels
         dist_map = distance_transform_edt(mask)
         eroded_mask = dist_map > margin  # keep only pixels at least `margin` inside
-
         if not eroded_mask.any():
             # After erosion, nothing remains
             all_points.append(np.zeros((0, num_points_per_cluster, 2), dtype=np.float32))
