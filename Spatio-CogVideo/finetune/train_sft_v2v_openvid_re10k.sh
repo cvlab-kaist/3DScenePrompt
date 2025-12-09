@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 unset PYTHONPATH
-export PYTHONNOUSERSITE=1   # ~/.local 무시
+export PYTHONNOUSERSITE=1  
 
 # Prevent tokenizer parallelism issues
 export TOKENIZERS_PARALLELISM=false
@@ -16,7 +16,7 @@ MODEL_ARGS=(
 
 # Output Configuration
 OUTPUT_ARGS=(
-    --output_dir "./output/v2v_sft_40000videos_w_openvid_re10k_4gpu3"
+    --output_dir "./output/"
     --report_to "wandb"
 )
 
